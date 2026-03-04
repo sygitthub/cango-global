@@ -84,6 +84,8 @@
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 预嵌入的 CANGO 机构数据（由脚本从 JSON 转换而来） -->
+    <script src="cango-data-lite.js"></script>
   </head>
 
   <body class="bg-slate-950 text-slate-50 font-sans">
@@ -322,8 +324,11 @@
                 <div>
                   <h2 class="text-sm font-semibold text-slate-100">
                     总部区域分布
-                    <span class="text-[11px] font-normal text-slate-400">
-                      (Europe 95 / Asia 66 / North America 28 / Africa 4 / South America 4 / Oceania 3 / Central Asia 2 / Middle East 2)
+                    <span
+                      id="hqRegionSummarySpan"
+                      class="text-[11px] font-normal text-slate-400"
+                    >
+                      (加载中...)
                     </span>
                   </h2>
                   <p class="mt-0.5 text-[11px] text-slate-500">
@@ -333,6 +338,83 @@
               </header>
               <div class="h-56">
                 <canvas id="hqRegionChart"></canvas>
+              </div>
+              <!-- 大洲点击区：触发侧边抽屉展示 205 家机构 -->
+              <div
+                class="mt-3 flex flex-wrap gap-2 text-[11px]"
+                id="continentChips"
+              >
+                <button
+                  id="Europe"
+                  data-continent-key="Europe"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-brand-400"></span>
+                  <span>欧洲 Europe</span>
+                </button>
+
+                <button
+                  id="Asia"
+                  data-continent-key="Asia"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                  <span>亚洲 Asia</span>
+                </button>
+
+                <button
+                  id="NorthAmerica"
+                  data-continent-key="North America"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>
+                  <span>北美 North America</span>
+                </button>
+
+                <button
+                  id="SouthAmerica"
+                  data-continent-key="South America"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
+                  <span>南美 South America</span>
+                </button>
+
+                <button
+                  id="Africa"
+                  data-continent-key="Africa"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-orange-400"></span>
+                  <span>非洲 Africa</span>
+                </button>
+
+                <button
+                  id="Oceania"
+                  data-continent-key="Oceania"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-fuchsia-400"></span>
+                  <span>大洋洲 Oceania</span>
+                </button>
+
+                <button
+                  id="CentralAsia"
+                  data-continent-key="Central Asia"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>
+                  <span>中亚 Central Asia</span>
+                </button>
+
+                <button
+                  id="MiddleEast"
+                  data-continent-key="Middle East"
+                  class="continent-chip inline-flex items-center gap-1 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-violet-400"></span>
+                  <span>中东 Middle East</span>
+                </button>
               </div>
             </article>
 
@@ -664,6 +746,116 @@
       </main>
     </div>
 
+    <!-- 侧边抽屉：按大洲展示机构列表 -->
+    <div
+      id="continentDrawer"
+      class="fixed inset-0 z-40 hidden"
+      aria-hidden="true"
+    >
+      <!-- 背景遮罩 -->
+      <div
+        id="continentDrawerBackdrop"
+        class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+      ></div>
+
+      <!-- 抽屉主体 -->
+      <aside
+        class="absolute right-0 top-0 h-full w-[90%] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl bg-slate-900 border-l border-slate-800 shadow-soft flex flex-col"
+      >
+        <!-- 顶部区域：标题 + 关闭 -->
+        <header
+          class="px-5 pt-4 pb-3 border-b border-slate-800 flex items-start justify-between gap-3"
+        >
+          <div>
+            <p class="text-[11px] text-slate-400">总部区域</p>
+            <h2
+              id="drawerTitle"
+              class="mt-0.5 text-sm font-semibold text-slate-50"
+            >
+              区域名称
+            </h2>
+            <p
+              id="drawerSubtitle"
+              class="mt-0.5 text-[11px] text-slate-500"
+            >
+              共 0 家机构，可通过下方搜索框快速筛选。
+            </p>
+          </div>
+          <button
+            id="drawerCloseTop"
+            type="button"
+            class="inline-flex items-center justify-center h-7 w-7 rounded-full border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-slate-50 transition-colors"
+            aria-label="关闭面板"
+          >
+            ✕
+          </button>
+        </header>
+
+        <!-- 搜索框 -->
+        <div class="px-5 pt-3 pb-2 border-b border-slate-800">
+          <div class="relative">
+            <span
+              class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500"
+            >
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15.5 15.5L18 18"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <circle
+                  cx="9.25"
+                  cy="9.25"
+                  r="4.75"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </span>
+            <input
+              id="drawerSearchInput"
+              type="text"
+              placeholder="在当前区域内搜索机构名称、地点或简介..."
+              class="w-full bg-slate-900/80 border border-slate-700 text-xs rounded-full pl-7 pr-3 py-1.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
+            />
+          </div>
+        </div>
+
+        <!-- 列表区域（可滚动） -->
+        <div
+          id="drawerContent"
+          class="flex-1 min-h-0 px-5 py-3 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700/70 scrollbar-track-transparent"
+        >
+          <p
+            id="drawerEmptyState"
+            class="text-[11px] text-slate-500 text-center mt-8"
+          >
+            正在加载数据，请稍候...
+          </p>
+          <div id="drawerList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- 底部关闭按钮：大拇指易触达 -->
+        <div
+          class="px-5 pb-4 pt-2 border-t border-slate-800 bg-slate-900/95 sticky bottom-0"
+        >
+          <button
+            id="drawerCloseBottom"
+            type="button"
+            class="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-slate-800 text-[12px] font-medium text-slate-100 hover:bg-slate-700 transition-colors"
+          >
+            关闭面板，返回大洲选择
+          </button>
+        </div>
+      </aside>
+    </div>
+
     <!-- 业务逻辑脚本：数据 + 图表 + 筛选 -->
     <script>
       // ===========================
@@ -679,16 +871,6 @@
       };
 
       // 模块 1：总部区域分布（严格按 Excel「总部所在-区域」字段统计，2026.02 更新）
-      // 逐条核验说明：
-      // - 欧洲（Europe）：95 家机构（含“欧洲注册”等归入欧洲）
-      // - 亚洲（Asia）：66 家机构
-      // - 北美洲（North America）：28 家机构
-      // - 非洲（Africa）：4 家机构
-      // - 南美洲（South America）：4 家机构
-      // - 大洋洲（Oceania）：3 家机构
-      // - 中亚（Central Asia）：2 家机构
-      // - 中东（Middle East）：2 家机构
-      // 合计：95+66+28+4+4+3+2+2 = 204（与 summaryMetrics.totalOrgs 保持一致）
       const regionDistribution = [
         { label: "欧洲 (Europe)", key: "Europe", value: 95, color: "#4F86FF" },
         { label: "亚洲 (Asia)", key: "Asia", value: 66, color: "#22C55E" },
@@ -764,6 +946,30 @@
         { label: "平台与网络", key: "Platform", value: 10 },
         { label: "其他角色", key: "Other", value: 5 },
       ];
+
+      // 标准化大洲中文名 -> regionDistribution.key 映射
+      const regionStdToKey = {
+        欧洲: "Europe",
+        亚洲: "Asia",
+        北美: "North America",
+        "南美/拉美": "South America",
+        非洲: "Africa",
+        大洋洲: "Oceania",
+        中亚: "Central Asia",
+        中东: "Middle East",
+      };
+
+      // regionDistribution.key -> 英文简称（用于区域分布标题中的文案）
+      const regionKeyToShortEn = {
+        Europe: "Europe",
+        Asia: "Asia",
+        "North America": "North America",
+        "South America": "South America",
+        Africa: "Africa",
+        Oceania: "Oceania",
+        "Central Asia": "Central Asia",
+        "Middle East": "Middle East",
+      };
 
       // 模块 3：成立时间趋势（按 5 年区间汇总，基于 Excel「成立时间」字段，2026.02 更新）
       // 逐条核验区间统计结果（204 家机构）：
@@ -1239,6 +1445,406 @@
           filtered.length;
       }
 
+      // ===========================
+      // CANGO JSON 数据 + 侧边抽屉逻辑
+      // ===========================
+
+      // HTML 大洲 ID / key 与 JSON 中「总部所在区域_标准化」的映射
+      // JSON 字段示例：总部所在区域_标准化 = "欧洲" / "亚洲" / "北美" / "南美/拉美" / "非洲" / "大洋洲" / "中亚" / "中东"
+      const continentIdToRegionStd = {
+        Europe: "欧洲",
+        Asia: "亚洲",
+        "North America": "北美",
+        "South America": "南美/拉美",
+        Africa: "非洲",
+        Oceania: "大洋洲",
+        "Central Asia": "中亚",
+        "Middle East": "中东",
+      };
+
+      // 用于标题显示的中英混合名称
+      const continentKeyToDisplayName = {
+        Europe: "欧洲（Europe）",
+        Asia: "亚洲（Asia）",
+        "North America": "北美（North America）",
+        "South America": "南美（South America）",
+        Africa: "非洲（Africa）",
+        Oceania: "大洋洲（Oceania）",
+        "Central Asia": "中亚（Central Asia）",
+        "Middle East": "中东（Middle East）",
+      };
+
+      // 缓存：按「总部所在区域_标准化」分组后的机构数据
+      let cangoOrgsByRegionStd = null;
+
+      async function loadCangoJsonOnce() {
+        if (cangoOrgsByRegionStd) return cangoOrgsByRegionStd;
+
+        // 使用预嵌入的 window.CANGO_DATA，而不是运行时 fetch 本地 JSON
+        try {
+          const source =
+            (window.CANGO_DATA && Array.isArray(window.CANGO_DATA.orgs)
+              ? window.CANGO_DATA.orgs
+              : []) || [];
+
+          const grouped = {};
+          source.forEach((item) => {
+            const regionStd = (item.regionStd || "").toString().trim();
+            const title = (item.title || "").toString().trim();
+
+            if (!regionStd || !title) return;
+
+            const normalizedItem = {
+              title,
+              subtitle: (item.subtitle || "").toString().trim(),
+              body: (item.body || "").toString().trim(),
+              tag: (item.tag || "").toString().trim(),
+            };
+
+            if (!grouped[regionStd]) grouped[regionStd] = [];
+            grouped[regionStd].push(normalizedItem);
+          });
+
+          // 每个区域内部按机构名称排序，提升可读性
+          Object.keys(grouped).forEach((k) => {
+            grouped[k].sort((a, b) =>
+              (a.title || "").localeCompare(b.title || "", "zh-CN", {
+                sensitivity: "base",
+              })
+            );
+          });
+
+          cangoOrgsByRegionStd = grouped;
+          return grouped;
+        } catch (err) {
+          console.error("解析 cango-global result.json 时出错:", err);
+          return {};
+        }
+      }
+
+      // 抽屉 DOM 引用
+      const drawerEl = document.getElementById("continentDrawer");
+      const drawerBackdropEl = document.getElementById(
+        "continentDrawerBackdrop"
+      );
+      const drawerTitleEl = document.getElementById("drawerTitle");
+      const drawerSubtitleEl = document.getElementById("drawerSubtitle");
+      const drawerSearchInputEl =
+        document.getElementById("drawerSearchInput");
+      const drawerListEl = document.getElementById("drawerList");
+      const drawerEmptyStateEl =
+        document.getElementById("drawerEmptyState");
+      const drawerCloseTopEl = document.getElementById("drawerCloseTop");
+      const drawerCloseBottomEl = document.getElementById(
+        "drawerCloseBottom"
+      );
+
+      let currentContinentKey = null;
+      let currentItemsForDrawer = [];
+      let lastFocusedElement = null;
+
+      function lockBodyScroll() {
+        document.documentElement.classList.add("overflow-hidden");
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function unlockBodyScroll() {
+        document.documentElement.classList.remove("overflow-hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      function setContinentChipActive(continentKey) {
+        const chips = document.querySelectorAll(".continent-chip");
+        chips.forEach((chip) => {
+          chip.classList.remove(
+            "bg-brand-500",
+            "text-white",
+            "border-brand-400"
+          );
+          chip.classList.add(
+            "bg-slate-900/80",
+            "text-slate-200",
+            "border-slate-700"
+          );
+        });
+
+        if (!continentKey) return;
+
+        const selector = `[data-continent-key="${continentKey}"]`;
+        const activeChip = document.querySelector(selector);
+        if (activeChip) {
+          activeChip.classList.remove(
+            "bg-slate-900/80",
+            "text-slate-200",
+            "border-slate-700"
+          );
+          activeChip.classList.add(
+            "bg-brand-500",
+            "text-white",
+            "border-brand-400"
+          );
+        }
+      }
+
+      function renderDrawerList(items, keyword = "") {
+        drawerListEl.innerHTML = "";
+
+        if (!items || !items.length) {
+          drawerEmptyStateEl.textContent =
+            "当前区域暂无机构数据，后续可根据 Excel 更新补充。";
+          drawerEmptyStateEl.classList.remove("hidden");
+          return;
+        }
+
+        const kw = keyword.trim().toLowerCase();
+        const filtered = kw
+          ? items.filter((item) => {
+              const blob = `${item.title || ""} ${item.subtitle || ""} ${
+                item.body || ""
+              } ${item.tag || ""}`
+                .toLowerCase()
+                .trim();
+              return blob.includes(kw);
+            })
+          : items;
+
+        if (!filtered.length) {
+          drawerEmptyStateEl.textContent =
+            "未找到匹配当前搜索条件的机构，请尝试更换关键词。";
+          drawerEmptyStateEl.classList.remove("hidden");
+          return;
+        }
+
+        drawerEmptyStateEl.classList.add("hidden");
+
+        filtered.forEach((item) => {
+          const card = document.createElement("article");
+          card.className =
+            "rounded-xl border border-slate-800/80 bg-slate-900/70 px-4 py-3 mb-4 shadow-sm transition transform duration-150 hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-md";
+
+          card.innerHTML = `
+            <h3 class="text-[1.15rem] font-semibold text-slate-50 mb-1.5">
+              ${item.title || "机构名称待补充"}
+            </h3>
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              ${
+                item.subtitle
+                  ? item.subtitle
+                      .split("｜")
+                      .map((chunk) => chunk.trim())
+                      .filter(Boolean)
+                      .map(
+                        (chunk) => `
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800/90 text-[11px] text-slate-100 border border-slate-600/80">
+                  ${chunk}
+                </span>`
+                      )
+                      .join("")
+                  : `<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800/90 text-[11px] text-slate-100 border border-slate-600/80">
+                      信息待补充
+                    </span>`
+              }
+            </div>
+            <p class="text-[14px] leading-[1.6] text-slate-200 mb-2">
+              ${item.body || "暂无详细业务简介，可参考备注或官网信息。"}
+            </p>
+            <p class="text-[11px] text-slate-400">
+              主要区域：<span class="text-slate-100 font-medium">${
+                item.tag || "待补充"
+              }</span>
+            </p>
+          `;
+
+          drawerListEl.appendChild(card);
+        });
+      }
+
+      async function openContinentDrawer(continentKey) {
+        const regionStd =
+          continentIdToRegionStd[continentKey] || continentKey;
+        const displayName =
+          continentKeyToDisplayName[continentKey] || continentKey;
+
+        const grouped = await loadCangoJsonOnce();
+        const items = grouped[regionStd] || [];
+
+        currentContinentKey = continentKey;
+        currentItemsForDrawer = items;
+
+        drawerTitleEl.textContent = displayName;
+        drawerSubtitleEl.textContent = `共 ${
+          items.length
+        } 家机构，可通过搜索框进行筛选。`;
+
+        drawerSearchInputEl.value = "";
+        renderDrawerList(items);
+
+        setContinentChipActive(continentKey);
+
+        drawerEl.classList.remove("hidden");
+        drawerEl.setAttribute("aria-hidden", "false");
+        lockBodyScroll();
+
+        lastFocusedElement = document.activeElement;
+        drawerSearchInputEl.focus();
+      }
+
+      function closeContinentDrawer() {
+        drawerEl.classList.add("hidden");
+        drawerEl.setAttribute("aria-hidden", "true");
+        unlockBodyScroll();
+        setContinentChipActive(null);
+
+        if (lastFocusedElement && lastFocusedElement.focus) {
+          lastFocusedElement.focus();
+        }
+        currentContinentKey = null;
+        currentItemsForDrawer = [];
+        drawerSearchInputEl.value = "";
+      }
+
+      function initContinentDrawer() {
+        const chipsContainer =
+          document.getElementById("continentChips");
+        if (!chipsContainer) return;
+
+        // 绑定大洲点击事件
+        chipsContainer.querySelectorAll(".continent-chip").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const key = btn.getAttribute("data-continent-key");
+            if (!key) return;
+            openContinentDrawer(key);
+          });
+        });
+
+        // 关闭事件：顶部 & 底部按钮 & 背景遮罩
+        drawerCloseTopEl.addEventListener("click", closeContinentDrawer);
+        drawerCloseBottomEl.addEventListener(
+          "click",
+          closeContinentDrawer
+        );
+        drawerBackdropEl.addEventListener("click", closeContinentDrawer);
+
+        // ESC 键关闭
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && !drawerEl.classList.contains("hidden")) {
+            closeContinentDrawer();
+          }
+        });
+
+        // 搜索框实时过滤
+        drawerSearchInputEl.addEventListener("input", (e) => {
+          if (!currentItemsForDrawer || !currentItemsForDrawer.length) {
+            return;
+          }
+          renderDrawerList(currentItemsForDrawer, e.target.value || "");
+        });
+      }
+
+      /**
+       * 从 cango-global result.json 自动获取最新唯一机构总数，
+       * 根据机构名称去重，并同步更新 UI 中的“机构总数”显示。
+       */
+      async function syncTotalOrgsFromJson() {
+        try {
+          const source =
+            (window.CANGO_DATA && Array.isArray(window.CANGO_DATA.orgs)
+              ? window.CANGO_DATA.orgs
+              : []) || [];
+
+          const seen = new Set();
+          let duplicateCount = 0;
+
+          source.forEach((item) => {
+            const nameStd = (item.title || "").toString().trim();
+
+            if (!nameStd) return;
+
+            if (seen.has(nameStd)) {
+              duplicateCount += 1;
+            } else {
+              seen.add(nameStd);
+            }
+          });
+
+          const totalUnique = seen.size;
+
+          // 控制台提示重复情况
+          if (duplicateCount > 0) {
+            console.warn(
+              `[CANGO] 在 JSON 数据中发现 ${duplicateCount} 条按机构名称判定的重复记录，已在总数计算中去重。`
+            );
+          } else {
+            console.info(
+              `[CANGO] JSON 数据按机构名称去重后，共 ${totalUnique} 家唯一机构，未发现重复记录。`
+            );
+          }
+
+          // 更新内存中的 summaryMetrics，后续 initSummaryMetrics 会使用
+          if (typeof summaryMetrics === "object" && summaryMetrics) {
+            summaryMetrics.totalOrgs = totalUnique;
+          }
+
+          // 立即更新已有 UI 元素，避免用户在图表加载前看到旧数字
+          const totalIds = [
+            "metricTotalOrgs",
+            "summaryTotalSpan",
+            "summaryTotalBadge",
+          ];
+          totalIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = totalUnique;
+          });
+        } catch (err) {
+          console.error(
+            "同步 cango-global result.json 总机构数时出错:",
+            err
+          );
+        }
+      }
+
+      /**
+       * 基于预嵌入数据动态同步各大洲机构数量，
+       * 更新 regionDistribution 数组和顶部「总部区域分布」标题中的统计文案。
+       */
+      function syncRegionDistributionFromData() {
+        const source =
+          (window.CANGO_DATA && Array.isArray(window.CANGO_DATA.orgs)
+            ? window.CANGO_DATA.orgs
+            : []) || [];
+
+        const countsByKey = {};
+        source.forEach((item) => {
+          const std = (item.regionStd || "").toString().trim();
+          const key = regionStdToKey[std];
+          if (!key) return;
+          countsByKey[key] = (countsByKey[key] || 0) + 1;
+        });
+
+        // 将动态统计结果写回 regionDistribution
+        regionDistribution.forEach((entry) => {
+          entry.value = countsByKey[entry.key] || 0;
+        });
+
+        // 同步「覆盖区域数」指标（有机构的区域个数）
+        const nonZeroRegions = Object.values(countsByKey).filter(
+          (v) => v > 0
+        ).length;
+        if (typeof summaryMetrics === "object" && summaryMetrics) {
+          summaryMetrics.regionsCovered = nonZeroRegions || 8;
+        }
+
+        // 更新标题中的说明文案：例如 (Europe 95 / Asia 66 / ...)
+        const span = document.getElementById("hqRegionSummarySpan");
+        if (span) {
+          const parts = regionDistribution.map((entry) => {
+            const shortEn = regionKeyToShortEn[entry.key] || entry.key;
+            return `${shortEn} ${entry.value}`;
+          });
+          span.textContent = `(${parts.join(" / ")})`;
+        }
+      }
+
       /**
        * 初始化所有图表与事件监听
        */
@@ -1317,8 +1923,13 @@
         renderOrganizationTable();
       }
 
-      // DOM 加载完成后初始化看板
-      window.addEventListener("DOMContentLoaded", initDashboard);
+      // DOM 加载完成后初始化：先对齐总数与区域统计，再渲染看板与抽屉交互
+      window.addEventListener("DOMContentLoaded", () => {
+        syncTotalOrgsFromJson();
+        syncRegionDistributionFromData();
+        initDashboard();
+        initContinentDrawer();
+      });
     </script>
   </body>
 </html>
