@@ -642,7 +642,7 @@
   var hoverR = -1, hoverC = -1, pinR = -1, pinC = -1, showMece = false;
 
   root.innerHTML = "";
-  root.setAttribute("style", "width:100%;display:block;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:#080F1E;border-radius:16px;padding:28px 20px 36px;box-sizing:border-box;color:#F1F5F9;user-select:none;");
+  root.setAttribute("style", "width:100%;max-width:100%;display:block;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:#080F1E;border-radius:16px;padding:28px 20px 36px;box-sizing:border-box;color:#F1F5F9;user-select:none;border:1px solid #1E293B;");
 
   var headerDiv = document.createElement("div");
   headerDiv.style.marginBottom = "18px";
@@ -675,12 +675,16 @@
     meceBtn.style.borderColor = showMece ? "#38BDF8" : "#1E293B";
   });
 
+  var contentWrap = document.createElement("div");
+  contentWrap.setAttribute("style", "width:100%;max-width:920px;margin:0 auto;");
+  root.appendChild(contentWrap);
+
   var mainRow = document.createElement("div");
   mainRow.setAttribute("style", "display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;");
-  root.appendChild(mainRow);
+  contentWrap.appendChild(mainRow);
 
   var mapWrap = document.createElement("div");
-  mapWrap.setAttribute("style", "overflow-x:auto;flex-shrink:0;");
+  mapWrap.setAttribute("style", "overflow-x:auto;flex:1;min-width:0;");
   mainRow.appendChild(mapWrap);
 
   var CELL = 42, LABEL_W = 114;
@@ -747,7 +751,7 @@
   mapWrap.appendChild(legendDiv);
 
   var panel = document.createElement("div");
-  panel.setAttribute("style", "flex:1;min-width:200px;max-width:270px;");
+  panel.setAttribute("style", "flex:0 0 240px;");
   mainRow.appendChild(panel);
 
   var detailCard = document.createElement("div");
