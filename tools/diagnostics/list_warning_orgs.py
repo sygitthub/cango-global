@@ -2,7 +2,9 @@
 import json
 from pathlib import Path
 
-path = Path("cango-global result.json")
+ROOT = Path(__file__).resolve().parents[2]
+
+path = ROOT / "cango-global result.json"
 data = json.loads(path.read_text(encoding="utf-8"))
 rows = data.get("机构总表", [])
 
@@ -18,7 +20,7 @@ for row in rows:
     if status_text and "正常运营" not in status_text and "存续" not in status_text:
         warning_names.append(name)
 
-out = Path("warning_orgs_list.txt")
+out = Path(__file__).resolve().with_name("warning_orgs_list.txt")
 lines = [f"需预警/待核查 共 {len(warning_names)} 家："] + [f"{i}. {n}" for i, n in enumerate(warning_names, 1)]
 out.write_text("\n".join(lines), encoding="utf-8")
 print("已写入", out)

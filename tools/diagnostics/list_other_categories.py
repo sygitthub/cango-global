@@ -10,8 +10,13 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from collections import Counter
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 # 使用与 build_site_data 相同的归一化逻辑
 from build_site_data import _normalize_nature, _normalize_function
@@ -25,7 +30,7 @@ except Exception:
 def main() -> None:
     if build_lite_payload is None:
         # 退路：直接读 data.json
-        data_path = Path(__file__).resolve().parent / "data.json"
+        data_path = ROOT / "data.json"
         if not data_path.exists():
             print("未找到 data.json，请先运行 build_site_data.py 或确保 cango-global result.json 存在后运行本脚本。")
             return

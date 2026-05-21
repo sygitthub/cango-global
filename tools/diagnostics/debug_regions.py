@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+
 
 def main() -> None:
-    path = Path("cango-global result.json")
+    path = ROOT / "cango-global result.json"
     data = json.loads(path.read_text(encoding="utf-8"))
     rows = data.get("机构总表", [])
     print("总记录数:", len(rows))
@@ -38,4 +40,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
