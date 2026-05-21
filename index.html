@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <!--
@@ -582,6 +582,114 @@
               </div>
             </article>
 
+            <!-- 模块 4：机构发现中心（真实机构检索） -->
+            <article
+              id="orgDiscovery"
+              class="dashboard-card col-span-12 rounded-3xl bg-slate-900/75 border border-slate-800"
+            >
+              <header class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
+                <div>
+                  <p class="text-[11px] tracking-[0.28em] uppercase text-brand-300 font-semibold">
+                    Organization Discovery
+                  </p>
+                  <h2 class="mt-1 text-xl font-semibold text-slate-50">
+                    机构发现中心
+                  </h2>
+                  <p class="mt-1.5 text-[12px] text-slate-400">
+                    基于完整机构数据进行关键词检索与多维筛选，快速定位潜在合作方、议题资源和中国相关线索。
+                  </p>
+                </div>
+                <div class="rounded-2xl border border-slate-700 bg-slate-950/60 px-5 py-3 text-right">
+                  <p class="text-[11px] text-slate-500">当前结果</p>
+                  <p class="mt-1 text-lg font-semibold text-slate-50">
+                    <span id="orgDiscoveryCount">0</span>
+                    <span class="text-slate-500"> / </span>
+                    <span id="orgDiscoveryTotal">0</span>
+                    <span class="text-sm font-normal text-slate-500"> 家机构</span>
+                  </p>
+                </div>
+              </header>
+
+              <div class="grid grid-cols-12 gap-3 mb-4">
+                <label class="col-span-12 lg:col-span-5 block text-[11px] text-slate-400">
+                  全局搜索
+                  <input
+                    id="orgDiscoverySearch"
+                    type="text"
+                    placeholder="搜索机构名、国家、城市、议题、合作线索..."
+                    class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-sm rounded-xl px-3 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
+                  />
+                </label>
+                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
+                  大洲
+                  <select id="orgDiscoveryRegion" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部大洲</option>
+                  </select>
+                </label>
+                <label id="orgDiscoverySubRegionWrap" class="hidden col-span-6 lg:col-span-2 text-[11px] text-slate-400">
+                  亚洲子区域
+                  <select id="orgDiscoverySubRegion" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部亚洲子区域</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
+                  国家 / 地区
+                  <select id="orgDiscoveryCountry" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部国家</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-3 block text-[11px] text-slate-400">
+                  关注议题
+                  <select id="orgDiscoveryTopic" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部议题</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-3 block text-[11px] text-slate-400">
+                  机构性质
+                  <select id="orgDiscoveryNature" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部性质</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-3 block text-[11px] text-slate-400">
+                  职能类型
+                  <select id="orgDiscoveryFunction" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部职能</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
+                  存续状态
+                  <select id="orgDiscoveryStatus" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部状态</option>
+                    <option value="Active">正常运营</option>
+                    <option value="Warning">需核查</option>
+                  </select>
+                </label>
+                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
+                  中国线索
+                  <select id="orgDiscoveryChina" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <option value="all">全部</option>
+                    <option value="yes">有线索</option>
+                    <option value="no">暂无线索</option>
+                  </select>
+                </label>
+                <div class="col-span-12 lg:col-span-2 flex items-end">
+                  <button
+                    id="orgDiscoveryReset"
+                    type="button"
+                    class="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-xs font-medium text-slate-100 hover:border-brand-400/60 transition-colors"
+                  >
+                    清空筛选
+                  </button>
+                </div>
+              </div>
+
+              <div id="orgDiscoveryActiveFilters" class="flex flex-wrap gap-2 mb-4"></div>
+              <div id="orgDiscoveryResults" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+              <p id="orgDiscoveryEmpty" class="hidden rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-6 text-center text-sm text-slate-400">
+                没有找到匹配当前条件的机构，请尝试减少筛选条件或更换关键词。
+              </p>
+            </article>
+
             <!-- 模块 5：机构列表（可筛选） -->
             <article
               class="col-span-12 rounded-2xl bg-slate-900/70 border border-slate-800 px-4 pt-3.5 pb-4 hidden"
@@ -690,7 +798,7 @@
                     </th>
                   </tr>
                 </thead>
-                                                                                                                                                                                                                                                          <tbody class="divide-y divide-slate-800/70">
+                                                                                                                                                                                                                                                                            <tbody class="divide-y divide-slate-800/70">
                   <tr>
                     <td class="px-3 py-2 text-[11px] text-slate-100">
                       欧洲 (Europe)
@@ -2140,6 +2248,7 @@
         initWarningModal();
       });
     </script>
+    <script src="org-discovery.js"></script>
     <script src="sphere-wordcloud.js"></script>
   </body>
 </html>
