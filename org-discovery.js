@@ -1,5 +1,5 @@
 (function () {
-  const state = { orgs: [], filtered: [] };
+  const state = { orgs: [], filtered: [], activeOrgId: null };
   const filterIds = [
     "orgDiscoverySearch",
     "orgDiscoveryRegion",
@@ -8,8 +8,6 @@
     "orgDiscoveryTopic",
     "orgDiscoveryNature",
     "orgDiscoveryFunction",
-    "orgDiscoveryStatus",
-    "orgDiscoveryChina",
   ];
   const continentOrder = ["欧洲", "亚洲", "北美", "南美/拉美", "非洲", "大洋洲"];
   const asiaSubRegionOrder = ["东亚", "东南亚", "南亚", "中亚", "中东", "亚洲其他"];
@@ -116,8 +114,6 @@
       topic: getSelect("orgDiscoveryTopic"),
       nature: getSelect("orgDiscoveryNature"),
       functionType: getSelect("orgDiscoveryFunction"),
-      status: getSelect("orgDiscoveryStatus"),
-      china: getSelect("orgDiscoveryChina"),
     };
   }
 
@@ -129,15 +125,165 @@
     if (filters.topic !== "all" && !(org.topics || []).includes(filters.topic)) return false;
     if (filters.nature !== "all" && org.natureStd !== filters.nature) return false;
     if (filters.functionType !== "all" && org.functionStd !== filters.functionType) return false;
-    if (filters.status !== "all" && org.statusStd !== filters.status) return false;
-    if (filters.china === "yes" && !hasChinaSignal(org)) return false;
-    if (filters.china === "no" && hasChinaSignal(org)) return false;
     return true;
   }
 
   function shortenText(value, max = 180) {
     const text = compactText(value);
     return text.length > max ? text.slice(0, max).trim() + "..." : text;
+  }
+
+  function fieldValue(value, fallback = "暂无") {
+    return isMeaningfulText(value) ? escapeHtml(compactText(value)) : fallback;
+  }
+
+  function renderInfoItem(label, value) {
+    return `
+      <div class="rounded-2xl border border-slate-800 bg-slate-950/45 px-3 py-3">
+        <p class="text-[11px] text-slate-500">${escapeHtml(label)}</p>
+        <p class="mt-1 text-[13px] leading-relaxed text-slate-200 whitespace-pre-line">${fieldValue(value)}</p>
+      </div>
+    `;
+  }
+
+  function renderDetailSection(title, value) {
+    if (!isMeaningfulText(value)) return "";
+    return `
+      <section class="rounded-2xl border border-slate-800 bg-slate-950/35 px-4 py-3">
+        <h4 class="text-[12px] font-semibold text-slate-100">${escapeHtml(title)}</h4>
+        <p class="mt-2 text-[13px] leading-relaxed text-slate-300 whitespace-pre-line">${escapeHtml(compactText(value))}</p>
+      </section>
+    `;
+  }
+
+  function renderTopicTags(topics) {
+    const values = Array.isArray(topics) ? topics.filter(isMeaningfulText) : [];
+    if (!values.length) return "";
+    return `
+      <section class="rounded-2xl border border-slate-800 bg-slate-950/35 px-4 py-3">
+        <h4 class="text-[12px] font-semibold text-slate-100">议题标签</h4>
+        <div class="mt-2 flex flex-wrap gap-2">
+          ${values
+            .map(
+              (topic) =>
+                `<span class="inline-flex items-center rounded-full bg-brand-500/10 border border-brand-400/25 px-2.5 py-1 text-[11px] text-brand-100">${escapeHtml(topic)}</span>`
+            )
+            .join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  function websiteHref(value) {
+    const url = compactText(value);
+    if (!url || url === "未检索到独立官网") return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(url)) return `https://${url}`;
+    return "";
+  }
+
+  function renderWebsite(org) {
+    const href = websiteHref(org.website);
+    if (!href) return renderInfoItem("官网链接", org.website);
+    return `
+      <div class="rounded-2xl border border-slate-800 bg-slate-950/45 px-3 py-3">
+        <p class="text-[11px] text-slate-500">官网链接</p>
+        <a class="mt-1 inline-flex max-w-full items-center text-[13px] text-brand-200 hover:text-brand-100 underline decoration-brand-400/40 underline-offset-4 break-all" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(compactText(org.website))}</a>
+      </div>
+    `;
+  }
+
+  function ensureDetailPanel() {
+    if (document.getElementById("orgDiscoveryDetailPanel")) return;
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div id="orgDiscoveryDetailPanel" class="hidden fixed inset-0 z-[80]" aria-hidden="true">
+          <div id="orgDiscoveryDetailBackdrop" class="absolute inset-0 bg-slate-950/75 backdrop-blur-sm"></div>
+          <aside class="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col border-l border-slate-800 bg-slate-950 shadow-2xl">
+            <header class="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4">
+              <div class="min-w-0">
+                <p class="text-[11px] tracking-[0.24em] uppercase text-brand-300 font-semibold">Organization Detail</p>
+                <h3 id="orgDiscoveryDetailTitle" class="mt-1 text-lg font-semibold leading-snug text-slate-50"></h3>
+                <p id="orgDiscoveryDetailSubtitle" class="mt-1 text-[12px] leading-relaxed text-slate-400"></p>
+              </div>
+              <button id="orgDiscoveryDetailCloseTop" type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-200 hover:border-brand-400/60 hover:text-white" aria-label="关闭详情">×</button>
+            </header>
+            <div id="orgDiscoveryDetailBody" class="flex-1 overflow-y-auto px-5 py-5"></div>
+            <footer class="border-t border-slate-800 px-5 py-4">
+              <button id="orgDiscoveryDetailCloseBottom" type="button" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-100 hover:border-brand-400/60">关闭</button>
+            </footer>
+          </aside>
+        </div>
+      `
+    );
+    document.getElementById("orgDiscoveryDetailBackdrop")?.addEventListener("click", closeDetailPanel);
+    document.getElementById("orgDiscoveryDetailCloseTop")?.addEventListener("click", closeDetailPanel);
+    document.getElementById("orgDiscoveryDetailCloseBottom")?.addEventListener("click", closeDetailPanel);
+  }
+
+  function renderContactDetails(org) {
+    return `
+      <details class="rounded-2xl border border-slate-800 bg-slate-950/35 px-4 py-3">
+        <summary class="cursor-pointer text-[12px] font-semibold text-slate-100">联系方式</summary>
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${renderInfoItem("联系人", org.contactName)}
+          ${renderInfoItem("职位", org.contactTitle)}
+          ${renderInfoItem("邮箱", org.email)}
+          ${renderInfoItem("电话", org.phone)}
+        </div>
+      </details>
+    `;
+  }
+
+  function openDetailPanel(orgId) {
+    ensureDetailPanel();
+    const org = state.orgs.find((item) => String(item._discoveryId) === String(orgId));
+    if (!org) return;
+    state.activeOrgId = org._discoveryId;
+    const panel = document.getElementById("orgDiscoveryDetailPanel");
+    const titleEl = document.getElementById("orgDiscoveryDetailTitle");
+    const subtitleEl = document.getElementById("orgDiscoveryDetailSubtitle");
+    const bodyEl = document.getElementById("orgDiscoveryDetailBody");
+    const location = [orgContinent(org), org.subRegionStd, org.country, org.city].filter(isMeaningfulText).join(" / ");
+    const subtitle = [org.nameCn, org.alias, location].filter(isMeaningfulText).join(" · ");
+    if (titleEl) titleEl.textContent = org.title || "机构名称待补充";
+    if (subtitleEl) subtitleEl.textContent = subtitle || "基础信息待补充";
+    if (bodyEl) {
+      bodyEl.innerHTML = `
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${renderInfoItem("性质", org.natureStd)}
+            ${renderInfoItem("职能", org.functionStd)}
+            ${renderInfoItem("成立年份", org.foundedYear || org.subtitle)}
+            ${renderInfoItem("存续状态", statusLabel(org.statusStd))}
+            ${renderWebsite(org)}
+            ${renderInfoItem("是否有分支机构", org.hasBranches ? "是" : "否")}
+          </div>
+          ${renderDetailSection("基本信息", org.body)}
+          ${renderDetailSection("业务与开展区域", [org.workRegions, org.extraWorkRegions].filter(isMeaningfulText).join("\\n"))}
+          ${renderTopicTags(org.topics)}
+          ${renderDetailSection("网络 / 联盟 / 备注", [org.networks, org.orgNotes].filter(isMeaningfulText).join("\\n\\n"))}
+          ${renderDetailSection("中国相关互动", org.chinaConnection)}
+          ${renderDetailSection("合作状态与合作说明", [org.cooperationStatus, org.cooperationNotes].filter(isMeaningfulText).join("\\n"))}
+          ${renderContactDetails(org)}
+          ${renderDetailSection("运营状态说明", org.statusNote || org.warningReason)}
+        </div>
+      `;
+    }
+    panel?.classList.remove("hidden");
+    panel?.setAttribute("aria-hidden", "false");
+    document.body.classList.add("overflow-hidden");
+    document.getElementById("orgDiscoveryDetailCloseTop")?.focus();
+  }
+
+  function closeDetailPanel() {
+    const panel = document.getElementById("orgDiscoveryDetailPanel");
+    if (!panel) return;
+    panel.classList.add("hidden");
+    panel.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("overflow-hidden");
+    state.activeOrgId = null;
   }
 
   function renderActiveFilters(filters) {
@@ -151,8 +297,6 @@
     if (filters.topic !== "all") chips.push(`议题：${filters.topic}`);
     if (filters.nature !== "all") chips.push(`性质：${filters.nature}`);
     if (filters.functionType !== "all") chips.push(`职能：${filters.functionType}`);
-    if (filters.status !== "all") chips.push(`状态：${statusLabel(filters.status)}`);
-    if (filters.china !== "all") chips.push(filters.china === "yes" ? "有中国线索" : "暂无线索");
     container.innerHTML = chips
       .map(
         (chip) =>
@@ -217,6 +361,9 @@
             </div>
             <p class="mt-3 text-[13px] leading-relaxed text-slate-300">${escapeHtml(shortenText(org.body, 180) || "暂无简介。")}</p>
             ${china}
+            <div class="mt-4 flex justify-end">
+              <button type="button" data-org-detail-id="${escapeHtml(org._discoveryId)}" class="rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-100 hover:border-brand-400/60 hover:text-white transition-colors">查看详情</button>
+            </div>
           </article>
         `;
       })
@@ -272,6 +419,17 @@
 
     const resetBtn = document.getElementById("orgDiscoveryReset");
     if (resetBtn) resetBtn.addEventListener("click", resetFilters);
+    const resultsEl = document.getElementById("orgDiscoveryResults");
+    if (resultsEl) {
+      resultsEl.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-org-detail-id]");
+        if (!button) return;
+        openDetailPanel(button.getAttribute("data-org-detail-id"));
+      });
+    }
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.activeOrgId !== null) closeDetailPanel();
+    });
     updateSubRegionVisibility();
     renderResults();
   }

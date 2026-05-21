@@ -30,6 +30,7 @@ from collections import Counter
 
 from rebuild_cango_from_excel import main as rebuild_from_excel
 from json_to_js_lite import build_lite_payload
+from data_quality import write_quality_report
 
 
 ROOT = Path(__file__).resolve().parent
@@ -44,8 +45,8 @@ REGION_STD_TO_KEY: Dict[str, str] = {
     "南美/拉美": "South America",
     "非洲": "Africa",
     "大洋洲": "Oceania",
-    "中亚": "Central Asia",
-    "中东": "Middle East",
+    "中亚": "Asia",
+    "中东": "Asia",
 }
 
 # 保持与前端 regionDistribution 同样的顺序与配色
@@ -56,8 +57,6 @@ REGION_KEY_ORDER: List[Tuple[str, str, str]] = [
     ("Africa", "非洲 (Africa)", "#F97316"),
     ("South America", "南美洲 (South America)", "#06B6D4"),
     ("Oceania", "大洋洲 (Oceania)", "#A855F7"),
-    ("Central Asia", "中亚 (Central Asia)", "#F43F5E"),
-    ("Middle East", "中东 (Middle East)", "#EC4899"),
 ]
 
 # 机构性质标准分类（饼图 6 类：非营利并入 NGO/社会组织，合计 = 总机构数）
@@ -185,10 +184,10 @@ def compute_metrics_from_payload(payload: dict) -> Tuple[dict, List[dict], dict]
     # 机构总数（orgs 已按名称去重）
     total_orgs = len(orgs)
 
-    # 区域分布
+    # 严格大洲分布：中亚/中东归入亚洲，子区域仅在发现中心使用
     counts_by_key: Dict[str, int] = {}
     for item in orgs:
-        std = str(item.get("regionStd") or "").strip()
+        std = str(item.get("continentStd") or item.get("regionStd") or "").strip()
         if not std:
             continue
         key = REGION_STD_TO_KEY.get(std)
@@ -221,7 +220,7 @@ def compute_metrics_from_payload(payload: dict) -> Tuple[dict, List[dict], dict]
     summary_metrics = {
         "totalOrgs": total_orgs,
         "activeOrgs": active_orgs,
-        "regionsCovered": regions_covered or 8,
+        "regionsCovered": regions_covered or 6,
         "orgsWithBranches": orgs_with_branches,
     }
 
@@ -539,6 +538,16 @@ def main() -> None:
     # 同步生成前端使用的 cango-data-lite.js（window.CANGO_DATA）
     write_cango_data_lite_js(payload)
 
+    # 输出数据质检报告，帮助人工定位疑似串行、格式异常和口径偏差
+    issues, quality_summary = write_quality_report(payload)
+    issue_counts = quality_summary.get("issueCounts", {})
+    print(
+        ">>> 数据质检报告已生成："
+        f"ERROR={issue_counts.get('ERROR', 0)}, "
+        f"WARN={issue_counts.get('WARN', 0)}, "
+        f"INFO={issue_counts.get('INFO', 0)}"
+    )
+
     # 3. 计算 summaryMetrics、各类分布，并写回 index.html
     summary, region_dist, extra = compute_metrics_from_payload(payload)
     print(">>> 统计结果：")
@@ -557,4 +566,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

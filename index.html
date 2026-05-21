@@ -278,10 +278,10 @@
                   id="metricRegionsCovered"
                   class="mt-1 text-3xl font-bold text-slate-50"
                 >
-                  8
+                  6
                 </p>
                 <p class="mt-0.5 text-[11px] text-slate-500">
-                  亚洲 / 欧洲 / 非洲 / 大洋洲 / 北美洲 / 南美洲 / 中亚 / 中东
+                  亚洲 / 欧洲 / 非洲 / 大洋洲 / 北美洲 / 南美洲
                 </p>
               </div>
             </article>
@@ -425,30 +425,6 @@
                   <span class="flex flex-col leading-tight">
                     <span>大洋洲</span>
                     <span class="text-[10px] text-slate-400">Oceania</span>
-                  </span>
-                </button>
-
-                <button
-                  id="CentralAsia"
-                  data-continent-key="Central Asia"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>中亚</span>
-                    <span class="text-[10px] text-slate-400">Central Asia</span>
-                  </span>
-                </button>
-
-                <button
-                  id="MiddleEast"
-                  data-continent-key="Middle East"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-pink-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>中东</span>
-                    <span class="text-[10px] text-slate-400">Middle East</span>
                   </span>
                 </button>
               </div>
@@ -656,23 +632,7 @@
                     <option value="all">全部职能</option>
                   </select>
                 </label>
-                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
-                  存续状态
-                  <select id="orgDiscoveryStatus" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                    <option value="all">全部状态</option>
-                    <option value="Active">正常运营</option>
-                    <option value="Warning">需核查</option>
-                  </select>
-                </label>
-                <label class="col-span-6 lg:col-span-2 block text-[11px] text-slate-400">
-                  中国线索
-                  <select id="orgDiscoveryChina" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                    <option value="all">全部</option>
-                    <option value="yes">有线索</option>
-                    <option value="no">暂无线索</option>
-                  </select>
-                </label>
-                <div class="col-span-12 lg:col-span-2 flex items-end">
+                <div class="col-span-12 lg:col-span-3 flex items-end">
                   <button
                     id="orgDiscoveryReset"
                     type="button"
@@ -798,7 +758,7 @@
                     </th>
                   </tr>
                 </thead>
-                                                                                                                                                                                                                                                                            <tbody class="divide-y divide-slate-800/70">
+                                                                                                                                                                                                                                                                                                                <tbody class="divide-y divide-slate-800/70">
                   <tr>
                     <td class="px-3 py-2 text-[11px] text-slate-100">
                       欧洲 (Europe)
@@ -815,10 +775,10 @@
                       亚洲 (Asia)
                     </td>
                     <td class="px-3 py-2 text-[11px] text-slate-100">
-                      65
+                      69
                     </td>
                     <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      65
+                      69
                     </td>
                   </tr>
                   <tr>
@@ -863,28 +823,6 @@
                     </td>
                     <td class="px-3 py-2 text-[11px] text-emerald-300">
                       3
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      中亚 (Central Asia)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      2
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      2
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      中东 (Middle East)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      2
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      2
                     </td>
                   </tr>
                   <tr class="bg-slate-900/80">
@@ -1068,20 +1006,18 @@
       const summaryMetrics = {
         totalOrgs: 203,
         activeOrgs: 197,
-        regionsCovered: 8,
+        regionsCovered: 6,
         orgsWithBranches: 18,
       };
 
       // 模块 1：总部区域分布（严格按 Excel「总部所在-区域」字段统计，2026.02 更新）
       const regionDistribution = [
         { label: "欧洲 (Europe)", key: "Europe", value: 95, color: "#4F86FF" },
-        { label: "亚洲 (Asia)", key: "Asia", value: 65, color: "#22C55E" },
+        { label: "亚洲 (Asia)", key: "Asia", value: 69, color: "#22C55E" },
         { label: "北美洲 (North America)", key: "North America", value: 28, color: "#EAB308" },
         { label: "非洲 (Africa)", key: "Africa", value: 4, color: "#F97316" },
         { label: "南美洲 (South America)", key: "South America", value: 4, color: "#06B6D4" },
         { label: "大洋洲 (Oceania)", key: "Oceania", value: 3, color: "#A855F7" },
-        { label: "中亚 (Central Asia)", key: "Central Asia", value: 2, color: "#F43F5E" },
-        { label: "中东 (Middle East)", key: "Middle East", value: 2, color: "#EC4899" },
       ];
 
       // 存续状态分布（运行正常 vs 需预警，2026.02 更新；172–204 号机构存续状态已核对）
@@ -1140,8 +1076,8 @@
         "南美/拉美": "South America",
         非洲: "Africa",
         大洋洲: "Oceania",
-        中亚: "Central Asia",
-        中东: "Middle East",
+        中亚: "Asia",
+        中东: "Asia",
       };
 
       // regionDistribution.key -> 英文简称（用于区域分布标题中的文案）
@@ -1152,8 +1088,6 @@
         "South America": "South America",
         Africa: "Africa",
         Oceania: "Oceania",
-        "Central Asia": "Central Asia",
-        "Middle East": "Middle East",
       };
 
       // 模块 3：成立时间趋势（按 5 年区间汇总，基于 Excel「成立时间」字段，2026.02 更新）
@@ -1679,8 +1613,7 @@
       // CANGO JSON 数据 + 侧边抽屉逻辑
       // ===========================
 
-      // HTML 大洲 ID / key 与 JSON 中「总部所在区域_标准化」的映射
-      // JSON 字段示例：总部所在区域_标准化 = "欧洲" / "亚洲" / "北美" / "南美/拉美" / "非洲" / "大洋洲" / "中亚" / "中东"
+      // HTML 大洲 ID / key 与 JSON 中「continentStd」的映射
       const continentIdToRegionStd = {
         Europe: "欧洲",
         Asia: "亚洲",
@@ -1688,8 +1621,6 @@
         "South America": "南美/拉美",
         Africa: "非洲",
         Oceania: "大洋洲",
-        "Central Asia": "中亚",
-        "Middle East": "中东",
       };
 
       // 用于标题显示的中英混合名称
@@ -1700,8 +1631,6 @@
         "South America": "南美（South America）",
         Africa: "非洲（Africa）",
         Oceania: "大洋洲（Oceania）",
-        "Central Asia": "中亚（Central Asia）",
-        "Middle East": "中东（Middle East）",
       };
 
       // 缓存：按「总部所在区域_标准化」分组后的机构数据
@@ -1719,7 +1648,11 @@
 
           const grouped = {};
           source.forEach((item) => {
-            const regionStd = (item.regionStd || "").toString().trim();
+            const regionStd = (
+              item.continentStd ||
+              item.regionStd ||
+              ""
+            ).toString().trim();
             const title = (item.title || "").toString().trim();
 
             if (!regionStd || !title) return;
@@ -2115,7 +2048,11 @@
 
         const countsByKey = {};
         source.forEach((item) => {
-          const std = (item.regionStd || "").toString().trim();
+          const std = (
+            item.continentStd ||
+            item.regionStd ||
+            ""
+          ).toString().trim();
           const key = regionStdToKey[std];
           if (!key) return;
           countsByKey[key] = (countsByKey[key] || 0) + 1;
@@ -2131,7 +2068,7 @@
           (v) => v > 0
         ).length;
         if (typeof summaryMetrics === "object" && summaryMetrics) {
-          summaryMetrics.regionsCovered = nonZeroRegions || 8;
+          summaryMetrics.regionsCovered = nonZeroRegions || 6;
         }
 
       }
