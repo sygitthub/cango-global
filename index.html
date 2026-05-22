@@ -400,85 +400,99 @@
                   总部区域分布
                 </h2>
               </header>
-              <div class="h-56">
-                <canvas id="hqRegionChart"></canvas>
-              </div>
-              <!-- 大洲点击区：触发侧边抽屉展示 205 家机构 -->
-              <div
-                class="mt-3 grid grid-cols-4 gap-2 text-[11px]"
-                id="continentChips"
-              >
-                <button
-                  id="Europe"
-                  data-continent-key="Europe"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
+              <div class="flex flex-col md:flex-row items-center justify-between gap-5">
+                <div class="h-72 w-full max-w-[330px] md:max-w-[320px]">
+                  <canvas id="hqRegionChart"></canvas>
+                </div>
+                <!-- 大洲图例：仅保留悬停提示，不再触发抽屉 -->
+                <div
+                  class="flex w-full flex-col gap-1.5 text-[11px] sm:max-w-[220px] md:w-[170px] md:shrink-0"
+                  id="continentChips"
                 >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>欧洲</span>
-                    <span class="text-[10px] text-slate-400">Europe</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-brand-300 hover:bg-brand-500/15 hover:shadow-[0_0_18px_rgba(96,165,250,0.18)] focus:outline-none focus:ring-1 focus:ring-brand-300"
+                    data-region-index="0"
+                    tabindex="0"
+                    title="欧洲 (Europe): 95 家 (46.8%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">欧洲</span>
+                      <span class="block truncate text-[10px] text-slate-400">Europe</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">95</span>
+                  </div>
 
-                <button
-                  id="Asia"
-                  data-continent-key="Asia"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>亚洲</span>
-                    <span class="text-[10px] text-slate-400">Asia</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-emerald-300 hover:bg-emerald-500/15 hover:shadow-[0_0_18px_rgba(52,211,153,0.18)] focus:outline-none focus:ring-1 focus:ring-emerald-300"
+                    data-region-index="1"
+                    tabindex="0"
+                    title="亚洲 (Asia): 69 家 (34.0%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">亚洲</span>
+                      <span class="block truncate text-[10px] text-slate-400">Asia</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">69</span>
+                  </div>
 
-                <button
-                  id="NorthAmerica"
-                  data-continent-key="North America"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>北美</span>
-                    <span class="text-[10px] text-slate-400">North America</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-amber-200 hover:bg-amber-400/15 hover:shadow-[0_0_18px_rgba(251,191,36,0.16)] focus:outline-none focus:ring-1 focus:ring-amber-200"
+                    data-region-index="2"
+                    tabindex="0"
+                    title="北美洲 (North America): 28 家 (13.8%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">北美</span>
+                      <span class="block truncate text-[10px] text-slate-400">North America</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">28</span>
+                  </div>
 
-                <button
-                  id="SouthAmerica"
-                  data-continent-key="South America"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>南美</span>
-                    <span class="text-[10px] text-slate-400">South America</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-orange-300 hover:bg-orange-400/15 hover:shadow-[0_0_18px_rgba(251,146,60,0.16)] focus:outline-none focus:ring-1 focus:ring-orange-300"
+                    data-region-index="3"
+                    tabindex="0"
+                    title="非洲 (Africa): 4 家 (2.0%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">非洲</span>
+                      <span class="block truncate text-[10px] text-slate-400">Africa</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">4</span>
+                  </div>
 
-                <button
-                  id="Africa"
-                  data-continent-key="Africa"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>非洲</span>
-                    <span class="text-[10px] text-slate-400">Africa</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-cyan-200 hover:bg-cyan-400/15 hover:shadow-[0_0_18px_rgba(34,211,238,0.16)] focus:outline-none focus:ring-1 focus:ring-cyan-200"
+                    data-region-index="4"
+                    tabindex="0"
+                    title="南美洲 (South America): 4 家 (2.0%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">南美</span>
+                      <span class="block truncate text-[10px] text-slate-400">South America</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">4</span>
+                  </div>
 
-                <button
-                  id="Oceania"
-                  data-continent-key="Oceania"
-                  class="continent-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 hover:border-brand-400 hover:bg-brand-500/20 transition-colors text-left"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-fuchsia-400"></span>
-                  <span class="flex flex-col leading-tight">
-                    <span>大洋洲</span>
-                    <span class="text-[10px] text-slate-400">Oceania</span>
-                  </span>
-                </button>
+                  <div
+                    class="continent-chip inline-flex items-center gap-2 rounded-lg border border-slate-700/90 bg-slate-900/70 px-2.5 py-1.5 text-slate-200 transition-all hover:border-fuchsia-300 hover:bg-fuchsia-400/15 hover:shadow-[0_0_18px_rgba(217,70,239,0.16)] focus:outline-none focus:ring-1 focus:ring-fuchsia-300"
+                    data-region-index="5"
+                    tabindex="0"
+                    title="大洋洲 (Oceania): 3 家 (1.5%)"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-fuchsia-400"></span>
+                    <span class="min-w-0 flex-1 leading-tight">
+                      <span class="block truncate font-medium">大洋洲</span>
+                      <span class="block truncate text-[10px] text-slate-400">Oceania</span>
+                    </span>
+                    <span class="shrink-0 text-[10px] font-semibold text-slate-300">3</span>
+                  </div>
+                </div>
               </div>
             </article>
 
@@ -899,116 +913,6 @@
       </main>
     </div>
 
-    <!-- 侧边抽屉：按大洲展示机构列表 -->
-    <div
-      id="continentDrawer"
-      class="fixed inset-0 z-40 hidden"
-      aria-hidden="true"
-    >
-      <!-- 背景遮罩 -->
-      <div
-        id="continentDrawerBackdrop"
-        class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
-      ></div>
-
-      <!-- 抽屉主体 -->
-      <aside
-        class="absolute right-0 top-0 h-full w-[90%] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl bg-slate-900 border-l border-slate-800 shadow-soft flex flex-col"
-      >
-        <!-- 顶部区域：标题 + 关闭 -->
-        <header
-          class="px-5 pt-4 pb-3 border-b border-slate-800 flex items-start justify-between gap-3"
-        >
-          <div>
-            <p class="text-[11px] text-slate-400">总部区域</p>
-            <h2
-              id="drawerTitle"
-              class="mt-0.5 text-sm font-semibold text-slate-50"
-            >
-              区域名称
-            </h2>
-            <p
-              id="drawerSubtitle"
-              class="mt-0.5 text-[11px] text-slate-500"
-            >
-              共 0 家机构，可通过下方搜索框快速筛选。
-            </p>
-          </div>
-          <button
-            id="drawerCloseTop"
-            type="button"
-            class="inline-flex items-center justify-center h-7 w-7 rounded-full border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-slate-50 transition-colors"
-            aria-label="关闭面板"
-          >
-            ✕
-          </button>
-        </header>
-
-        <!-- 搜索框 -->
-        <div class="px-5 pt-4 pb-3 border-b border-slate-800">
-          <div class="relative">
-            <span
-              class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500"
-            >
-              <svg
-                class="h-3.5 w-3.5"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15.5 15.5L18 18"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-                <circle
-                  cx="9.25"
-                  cy="9.25"
-                  r="4.75"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-            </span>
-            <input
-              id="drawerSearchInput"
-              type="text"
-              placeholder="在当前区域内搜索机构名称、地点或简介..."
-              class="w-full bg-slate-900/80 border border-slate-700 text-xs rounded-full pl-7 pr-3 py-2 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
-            />
-          </div>
-        </div>
-
-        <!-- 列表区域（可滚动） -->
-        <div
-          id="drawerContent"
-          class="flex-1 min-h-0 px-5 py-3 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700/70 scrollbar-track-transparent"
-        >
-          <p
-            id="drawerEmptyState"
-            class="text-[11px] text-slate-500 text-center mt-8"
-          >
-            正在加载数据，请稍候...
-          </p>
-          <div id="drawerList" class="space-y-2.5"></div>
-        </div>
-
-        <!-- 底部关闭按钮：大拇指易触达 -->
-        <div
-          class="px-5 pb-4 pt-2 border-t border-slate-800 bg-slate-900/95 sticky bottom-0"
-        >
-          <button
-            id="drawerCloseBottom"
-            type="button"
-            class="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-slate-800 text-[12px] font-medium text-slate-100 hover:bg-slate-700 transition-colors"
-          >
-            关闭面板，返回大洲选择
-          </button>
-        </div>
-      </aside>
-    </div>
-
     <!-- 弹窗：待核查机构详情（点击存续状态图红色扇区或「需预警/待核查」图例触发） -->
     <div
       id="warningModal"
@@ -1382,6 +1286,9 @@
                 backgroundColor: colors,
                 borderWidth,
                 borderColor,
+                hoverOffset: 8,
+                hoverBorderWidth: Math.max(borderWidth + 2, 3),
+                hoverBorderColor: "#e0f2fe",
               },
             ],
           },
@@ -1504,6 +1411,41 @@
               },
             },
           },
+        });
+      }
+
+      function initRegionChipHover(chart) {
+        if (!chart) return;
+        const chips = document.querySelectorAll("#continentChips .continent-chip");
+        chips.forEach((chip) => {
+          const index = Number(chip.dataset.regionIndex);
+          if (!Number.isInteger(index)) return;
+
+          const activate = () => {
+            const meta = chart.getDatasetMeta(0);
+            const element = meta?.data?.[index];
+            if (!element || !chart.tooltip) return;
+
+            chart.setActiveElements([{ datasetIndex: 0, index }]);
+            chart.tooltip.setActiveElements(
+              [{ datasetIndex: 0, index }],
+              { x: element.x, y: element.y }
+            );
+            chart.update();
+          };
+
+          const clear = () => {
+            chart.setActiveElements([]);
+            if (chart.tooltip) {
+              chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+            }
+            chart.update();
+          };
+
+          chip.addEventListener("mouseenter", activate);
+          chip.addEventListener("mouseleave", clear);
+          chip.addEventListener("focus", activate);
+          chip.addEventListener("blur", clear);
         });
       }
 
@@ -1662,307 +1604,6 @@
       }
 
       // ===========================
-      // CANGO JSON 数据 + 侧边抽屉逻辑
-      // ===========================
-
-      // HTML 大洲 ID / key 与 JSON 中「continentStd」的映射
-      const continentIdToRegionStd = {
-        Europe: "欧洲",
-        Asia: "亚洲",
-        "North America": "北美",
-        "South America": "南美/拉美",
-        Africa: "非洲",
-        Oceania: "大洋洲",
-      };
-
-      // 用于标题显示的中英混合名称
-      const continentKeyToDisplayName = {
-        Europe: "欧洲（Europe）",
-        Asia: "亚洲（Asia）",
-        "North America": "北美（North America）",
-        "South America": "南美（South America）",
-        Africa: "非洲（Africa）",
-        Oceania: "大洋洲（Oceania）",
-      };
-
-      // 缓存：按「总部所在区域_标准化」分组后的机构数据
-      let cangoOrgsByRegionStd = null;
-
-      async function loadCangoJsonOnce() {
-        if (cangoOrgsByRegionStd) return cangoOrgsByRegionStd;
-
-        // 使用预嵌入的 window.CANGO_DATA，而不是运行时 fetch 本地 JSON
-        try {
-          const source =
-            (window.CANGO_DATA && Array.isArray(window.CANGO_DATA.orgs)
-              ? window.CANGO_DATA.orgs
-              : []) || [];
-
-          const grouped = {};
-          source.forEach((item) => {
-            const regionStd = (
-              item.continentStd ||
-              item.regionStd ||
-              ""
-            ).toString().trim();
-            const title = (item.title || "").toString().trim();
-
-            if (!regionStd || !title) return;
-
-            const normalizedItem = {
-              title,
-              subtitle: (item.subtitle || "").toString().trim(),
-              body: (item.body || "").toString().trim(),
-              tag: (item.tag || "").toString().trim(),
-            };
-
-            if (!grouped[regionStd]) grouped[regionStd] = [];
-            grouped[regionStd].push(normalizedItem);
-          });
-
-          // 每个区域内部按机构名称排序，提升可读性
-          Object.keys(grouped).forEach((k) => {
-            grouped[k].sort((a, b) =>
-              (a.title || "").localeCompare(b.title || "", "zh-CN", {
-                sensitivity: "base",
-              })
-            );
-          });
-
-          cangoOrgsByRegionStd = grouped;
-          return grouped;
-        } catch (err) {
-          console.error("解析 cango-global result.json 时出错:", err);
-          return {};
-        }
-      }
-
-      // 抽屉 DOM 引用
-      const drawerEl = document.getElementById("continentDrawer");
-      const drawerBackdropEl = document.getElementById(
-        "continentDrawerBackdrop"
-      );
-      const drawerTitleEl = document.getElementById("drawerTitle");
-      const drawerSubtitleEl = document.getElementById("drawerSubtitle");
-      const drawerSearchInputEl =
-        document.getElementById("drawerSearchInput");
-      const drawerListEl = document.getElementById("drawerList");
-      const drawerEmptyStateEl =
-        document.getElementById("drawerEmptyState");
-      const drawerCloseTopEl = document.getElementById("drawerCloseTop");
-      const drawerCloseBottomEl = document.getElementById(
-        "drawerCloseBottom"
-      );
-
-      let currentContinentKey = null;
-      let currentItemsForDrawer = [];
-      let lastFocusedElement = null;
-
-      function lockBodyScroll() {
-        document.documentElement.classList.add("overflow-hidden");
-        document.body.classList.add("overflow-hidden");
-      }
-
-      function unlockBodyScroll() {
-        document.documentElement.classList.remove("overflow-hidden");
-        document.body.classList.remove("overflow-hidden");
-      }
-
-      function setContinentChipActive(continentKey) {
-        const chips = document.querySelectorAll(".continent-chip");
-        chips.forEach((chip) => {
-          chip.classList.remove(
-            "bg-brand-500",
-            "text-white",
-            "border-brand-400"
-          );
-          chip.classList.add(
-            "bg-slate-900/80",
-            "text-slate-200",
-            "border-slate-700"
-          );
-        });
-
-        if (!continentKey) return;
-
-        const selector = `[data-continent-key="${continentKey}"]`;
-        const activeChip = document.querySelector(selector);
-        if (activeChip) {
-          activeChip.classList.remove(
-            "bg-slate-900/80",
-            "text-slate-200",
-            "border-slate-700"
-          );
-          activeChip.classList.add(
-            "bg-brand-500",
-            "text-white",
-            "border-brand-400"
-          );
-        }
-      }
-
-      function renderDrawerList(items, keyword = "") {
-        drawerListEl.innerHTML = "";
-
-        if (!items || !items.length) {
-          drawerEmptyStateEl.textContent =
-            "当前区域暂无机构数据，后续可根据 Excel 更新补充。";
-          drawerEmptyStateEl.classList.remove("hidden");
-          return;
-        }
-
-        const kw = keyword.trim().toLowerCase();
-        const filtered = kw
-          ? items.filter((item) => {
-              const blob = `${item.title || ""} ${item.subtitle || ""} ${
-                item.body || ""
-              } ${item.tag || ""}`
-                .toLowerCase()
-                .trim();
-              return blob.includes(kw);
-            })
-          : items;
-
-        if (!filtered.length) {
-          drawerEmptyStateEl.textContent =
-            "未找到匹配当前搜索条件的机构，请尝试更换关键词。";
-          drawerEmptyStateEl.classList.remove("hidden");
-          return;
-        }
-
-        drawerEmptyStateEl.classList.add("hidden");
-
-        filtered.forEach((item) => {
-          const card = document.createElement("article");
-          card.className =
-            "rounded-xl border border-slate-800/80 bg-slate-900/70 px-4 py-3 mb-4 shadow-sm transition transform duration-150 hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-md";
-
-          card.innerHTML = `
-            <h3 class="text-[1.15rem] font-semibold text-slate-50 mb-1.5">
-              ${item.title || "机构名称待补充"}
-            </h3>
-            <div class="flex flex-wrap items-center gap-2 mb-2">
-              ${
-                item.subtitle
-                  ? item.subtitle
-                      .split("｜")
-                      .map((chunk) => chunk.trim())
-                      .filter(Boolean)
-                      .map(
-                        (chunk) => `
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800/90 text-[11px] text-slate-100 border border-slate-600/80">
-                  ${chunk}
-                </span>`
-                      )
-                      .join("")
-                  : `<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800/90 text-[11px] text-slate-100 border border-slate-600/80">
-                      信息待补充
-                    </span>`
-              }
-            </div>
-            <p class="text-[14px] leading-[1.6] text-slate-200 mb-2">
-              ${item.body || "暂无详细业务简介，可参考备注或官网信息。"}
-            </p>
-            <p class="text-[11px] text-slate-400">
-              主要区域：<span class="text-slate-100 font-medium">${
-                item.tag || "待补充"
-              }</span>
-            </p>
-          `;
-
-          drawerListEl.appendChild(card);
-        });
-      }
-
-      async function openContinentDrawer(continentKey) {
-        const regionStd =
-          continentIdToRegionStd[continentKey] || continentKey;
-        const displayName =
-          continentKeyToDisplayName[continentKey] || continentKey;
-
-        const grouped = await loadCangoJsonOnce();
-        const items = grouped[regionStd] || [];
-
-        currentContinentKey = continentKey;
-        currentItemsForDrawer = items;
-
-        drawerTitleEl.textContent = displayName;
-        drawerSubtitleEl.textContent = `共 ${
-          items.length
-        } 家机构，可通过搜索框进行筛选。`;
-
-        drawerSearchInputEl.value = "";
-        renderDrawerList(items);
-
-        setContinentChipActive(continentKey);
-
-        drawerEl.classList.remove("hidden");
-        drawerEl.setAttribute("aria-hidden", "false");
-        lockBodyScroll();
-
-        lastFocusedElement = document.activeElement;
-        drawerSearchInputEl.focus();
-      }
-
-      function closeContinentDrawer() {
-        drawerEl.classList.add("hidden");
-        drawerEl.setAttribute("aria-hidden", "true");
-        unlockBodyScroll();
-        setContinentChipActive(null);
-
-        if (lastFocusedElement && lastFocusedElement.focus) {
-          lastFocusedElement.focus();
-        }
-        currentContinentKey = null;
-        currentItemsForDrawer = [];
-        drawerSearchInputEl.value = "";
-      }
-
-      function initContinentDrawer() {
-        const chipsContainer =
-          document.getElementById("continentChips");
-        if (!chipsContainer) return;
-
-        // 绑定大洲点击事件
-        chipsContainer.querySelectorAll(".continent-chip").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const key = btn.getAttribute("data-continent-key");
-            if (!key) return;
-            openContinentDrawer(key);
-          });
-        });
-
-        // 关闭事件：顶部 & 底部按钮 & 背景遮罩
-        drawerCloseTopEl.addEventListener("click", closeContinentDrawer);
-        drawerCloseBottomEl.addEventListener(
-          "click",
-          closeContinentDrawer
-        );
-        drawerBackdropEl.addEventListener("click", closeContinentDrawer);
-
-        // ESC 键关闭（优先关闭弹窗，再关闭抽屉）
-        window.addEventListener("keydown", (e) => {
-          if (e.key !== "Escape") return;
-          const warningModalEl = document.getElementById("warningModal");
-          if (warningModalEl && !warningModalEl.classList.contains("hidden")) {
-            closeWarningModal();
-            return;
-          }
-          if (!drawerEl.classList.contains("hidden")) {
-            closeContinentDrawer();
-          }
-        });
-
-        // 搜索框实时过滤
-        drawerSearchInputEl.addEventListener("input", (e) => {
-          if (!currentItemsForDrawer || !currentItemsForDrawer.length) {
-            return;
-          }
-          renderDrawerList(currentItemsForDrawer, e.target.value || "");
-        });
-      }
-
-      // ===========================
       // 待核查机构详情弹窗
       // ===========================
       function openWarningModal() {
@@ -2024,6 +1665,13 @@
         }
         if (closeBtn) closeBtn.addEventListener("click", closeWarningModal);
         if (backdrop) backdrop.addEventListener("click", closeWarningModal);
+        window.addEventListener("keydown", (e) => {
+          if (e.key !== "Escape") return;
+          const modalEl = document.getElementById("warningModal");
+          if (modalEl && !modalEl.classList.contains("hidden")) {
+            closeWarningModal();
+          }
+        });
       }
 
       /**
@@ -2135,22 +1783,15 @@
         const hqCtx = document
           .getElementById("hqRegionChart")
           .getContext("2d");
-        createDoughnutChart(
+        const hqChart = createDoughnutChart(
           hqCtx,
           regionDistribution.map((d) => d.label),
           regionDistribution.map((d) => d.value),
           regionDistribution.map((d) => d.color),
           "58%",
-          true,
-          ({ index }) => {
-            const entry = regionDistribution[index];
-            if (!entry) return;
-            const continentKey = entry.key;
-            if (continentKey) {
-              openContinentDrawer(continentKey);
-            }
-          }
+          false
         );
+        initRegionChipHover(hqChart);
 
         // 存续状态环形图（点击红色「需预警/待核查」扇区打开详情弹窗；悬停显示「点击查看机构名单」）
         const statusCtx = document
@@ -2228,12 +1869,11 @@
         // 议题关注词云由 #sphere-wordcloud-root 内联脚本渲染
       }
 
-      // DOM 加载完成后初始化：先对齐总数与区域统计，再渲染看板与抽屉交互
+      // DOM 加载完成后初始化：先对齐总数与区域统计，再渲染看板与弹窗交互
       window.addEventListener("DOMContentLoaded", () => {
         syncTotalOrgsFromJson();
         syncRegionDistributionFromData();
         initDashboard();
-        initContinentDrawer();
         initWarningModal();
       });
     </script>
