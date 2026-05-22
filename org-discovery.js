@@ -6,8 +6,6 @@
     "orgDiscoverySubRegion",
     "orgDiscoveryCountry",
     "orgDiscoveryTopic",
-    "orgDiscoveryNature",
-    "orgDiscoveryFunction",
   ];
   const continentOrder = ["欧洲", "亚洲", "北美", "南美/拉美", "非洲", "大洋洲"];
   const asiaSubRegionOrder = ["东亚", "东南亚", "南亚", "中亚", "中东", "亚洲其他"];
@@ -106,15 +104,24 @@
   function getFilters() {
     const getSelect = (id) => document.getElementById(id)?.value || "all";
     const getSearch = (id) => document.getElementById(id)?.value || "";
+    const region = getSelect("orgDiscoveryRegion");
     return {
-      keyword: normalizeForSearch(getSearch("orgDiscoverySearch")),
-      region: getSelect("orgDiscoveryRegion"),
-      subRegion: getSelect("orgDiscoverySubRegion"),
+      keyword: normalizeForSearch(getSearch("orgDiscoverySearch").trim()),
+      region,
+      subRegion: region === "亚洲" ? getSelect("orgDiscoverySubRegion") : "all",
       country: getSelect("orgDiscoveryCountry"),
       topic: getSelect("orgDiscoveryTopic"),
-      nature: getSelect("orgDiscoveryNature"),
-      functionType: getSelect("orgDiscoveryFunction"),
     };
+  }
+
+  function hasActiveFilters(filters) {
+    return Boolean(
+      filters.keyword ||
+        filters.region !== "all" ||
+        filters.country !== "all" ||
+        filters.topic !== "all" ||
+        (filters.region === "亚洲" && filters.subRegion !== "all")
+    );
   }
 
   function matchesFilters(org, filters) {
@@ -123,8 +130,6 @@
     if (filters.subRegion !== "all" && org.subRegionStd !== filters.subRegion) return false;
     if (filters.country !== "all" && org.country !== filters.country) return false;
     if (filters.topic !== "all" && !(org.topics || []).includes(filters.topic)) return false;
-    if (filters.nature !== "all" && org.natureStd !== filters.nature) return false;
-    if (filters.functionType !== "all" && org.functionStd !== filters.functionType) return false;
     return true;
   }
 
@@ -289,20 +294,39 @@
   function renderActiveFilters(filters) {
     const container = document.getElementById("orgDiscoveryActiveFilters");
     if (!container) return;
+
+    if (!hasActiveFilters(filters)) {
+      container.innerHTML = `
+        <button
+          type="button"
+          data-org-discovery-reset
+          class="inline-flex items-center rounded-full border border-brand-400/50 bg-brand-500/15 px-3 py-1.5 text-[12px] font-medium text-brand-100 hover:border-brand-300 hover:bg-brand-500/25 transition-colors"
+        >
+          全部机构 (${state.orgs.length})
+        </button>
+      `;
+      return;
+    }
+
     const chips = [];
-    if (filters.keyword) chips.push(`关键词：${document.getElementById("orgDiscoverySearch").value.trim()}`);
+    const searchText = document.getElementById("orgDiscoverySearch")?.value.trim() || "";
+    if (filters.keyword) chips.push(`关键词：${searchText}`);
     if (filters.region !== "all") chips.push(`大洲：${filters.region}`);
-    if (filters.subRegion !== "all") chips.push(`亚洲子区域：${filters.subRegion}`);
+    if (filters.region === "亚洲" && filters.subRegion !== "all") chips.push(`亚洲子区域：${filters.subRegion}`);
     if (filters.country !== "all") chips.push(`国家：${filters.country}`);
     if (filters.topic !== "all") chips.push(`议题：${filters.topic}`);
-    if (filters.nature !== "all") chips.push(`性质：${filters.nature}`);
-    if (filters.functionType !== "all") chips.push(`职能：${filters.functionType}`);
     container.innerHTML = chips
       .map(
         (chip) =>
           `<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-950/70 px-2.5 py-1 text-[11px] text-slate-300">${escapeHtml(chip)}</span>`
       )
       .join("");
+  }
+
+  function updateResetButtonVisibility(filters) {
+    const resetBtn = document.getElementById("orgDiscoveryReset");
+    if (!resetBtn) return;
+    resetBtn.classList.toggle("hidden", !hasActiveFilters(filters));
   }
 
   function renderResults() {
@@ -316,6 +340,7 @@
     if (countEl) countEl.textContent = filtered.length;
     if (totalEl) totalEl.textContent = state.orgs.length;
     renderActiveFilters(filters);
+    updateResetButtonVisibility(filters);
     if (!resultsEl || !emptyEl) return;
     if (!filtered.length) {
       resultsEl.innerHTML = "";
@@ -400,8 +425,6 @@
     setSelectOptions("orgDiscoveryRegion", continentOrder.filter((continent) => availableContinents.has(continent)), "全部大洲");
     setSelectOptions("orgDiscoverySubRegion", asiaSubRegionOrder.filter((subRegion) => availableAsiaSubRegions.has(subRegion)), "全部亚洲子区域");
     setSelectOptions("orgDiscoveryCountry", uniqueSorted(state.orgs.map((org) => org.country)), "全部国家");
-    setSelectOptions("orgDiscoveryNature", uniqueSorted(state.orgs.map((org) => org.natureStd)), "全部性质");
-    setSelectOptions("orgDiscoveryFunction", uniqueSorted(state.orgs.map((org) => org.functionStd)), "全部职能");
     setSelectOptions("orgDiscoveryTopic", uniqueSorted(state.orgs.flatMap((org) => org.topics || [])), "全部议题");
 
     filterIds.forEach((id) => {
@@ -419,6 +442,14 @@
 
     const resetBtn = document.getElementById("orgDiscoveryReset");
     if (resetBtn) resetBtn.addEventListener("click", resetFilters);
+    const activeFiltersEl = document.getElementById("orgDiscoveryActiveFilters");
+    if (activeFiltersEl) {
+      activeFiltersEl.addEventListener("click", (event) => {
+        const resetTarget = event.target.closest("[data-org-discovery-reset]");
+        if (!resetTarget) return;
+        resetFilters();
+      });
+    }
     const resultsEl = document.getElementById("orgDiscoveryResults");
     if (resultsEl) {
       resultsEl.addEventListener("click", (event) => {

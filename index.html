@@ -658,7 +658,7 @@
                   <input
                     id="orgDiscoverySearch"
                     type="text"
-                    placeholder="搜索机构名、国家、城市、议题、合作线索..."
+                    placeholder="搜索关键字"
                     class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-sm rounded-xl px-3 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </label>
@@ -686,23 +686,11 @@
                     <option value="all">全部议题</option>
                   </select>
                 </label>
-                <label class="col-span-6 lg:col-span-3 block text-[11px] text-slate-400">
-                  机构性质
-                  <select id="orgDiscoveryNature" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                    <option value="all">全部性质</option>
-                  </select>
-                </label>
-                <label class="col-span-6 lg:col-span-3 block text-[11px] text-slate-400">
-                  职能类型
-                  <select id="orgDiscoveryFunction" class="mt-1.5 w-full bg-slate-950/70 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
-                    <option value="all">全部职能</option>
-                  </select>
-                </label>
-                <div class="col-span-12 lg:col-span-3 flex items-end">
+                <div class="col-span-12 lg:col-span-3 lg:col-start-10 flex items-end">
                   <button
                     id="orgDiscoveryReset"
                     type="button"
-                    class="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-xs font-medium text-slate-100 hover:border-brand-400/60 transition-colors"
+                    class="hidden w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-xs font-medium text-slate-100 hover:border-brand-400/60 transition-all duration-200"
                   >
                     清空筛选
                   </button>

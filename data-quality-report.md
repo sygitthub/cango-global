@@ -1,6 +1,6 @@
 # CANGO 数据质检报告
 
-- 生成时间：2026-05-21 17:26:42
+- 生成时间：2026-05-22 13:28:59
 - 机构总数：203
 - 问题统计：ERROR 11 / WARN 181 / INFO 57
 
@@ -19,6 +19,40 @@
 | 亚洲子区域：南亚 | 4 | 4 |
 | 亚洲子区域：中亚 | 2 | 2 |
 | 亚洲子区域：中东 | 2 | 2 |
+
+## 重点排查
+
+以下为发布前建议优先人工核对的问题，通常对应疑似串行、区域口径或关键字段错误。
+
+| 机构 | 字段 | 问题 | 当前值 | 建议 |
+|---|---|---|---|---|
+| BBC World Service Trust | statusNote | 运营状态说明疑似提到其他机构：BBC Media Action | 已停止独立运营，2011年后正式改名为 BBC Media Action，原品牌已停用。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| East Asia Climate Network | statusNote | 运营状态说明疑似提到其他机构：Plan International | 正常运营：作为EANET（Acid Deposition Monitoring Network in East Asia），网站（eanet.asia）活跃；2026年工作计划、监测数据发布和Medium-Term Plan 2026-2030已批准并实施。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| Evangelischer Entwicklungsdienst | statusNote | 运营状态说明疑似提到其他机构：Bread for the World | 已于2012年并入 Brot für die Welt，原机构品牌不再独立存在，但其职能与项目在新架构内继续运作，视为“并入重组型正常存续”。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| Evangelisches Zentralstelle für Entwicklungshilfe | statusNote | 运营状态说明疑似提到其他机构：Bread for the World | 已于1999年并入 EED，并最终于2012年随同 EED 一并整合入 Brot für die Welt。现不再作为独立机构存在，属于“历史整合型，已注销”。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| Friends of the Earth Germany | statusNote | 运营状态说明疑似提到其他机构：Bread for the World | 正常运营， 官方网站（bread.org）有2024-2025年的报告和活动，包括饥饿政策分析和人道主义援助项目。2025年德国分部（Brot für die Welt）开展全国性水资源和粮食安全活动。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| Friends of the Earth Germany | statusNote | 运营状态说明包含与官网不一致的域名：bread.org | 正常运营， 官方网站（bread.org）有2024-2025年的报告和活动，包括饥饿政策分析和人道主义援助项目。2025年德国分部（Brot für die Welt）开展全国性水资源和粮食安全活动。 | 优先核对该行是否引用了其他机构官网或状态说明。 |
+| HSBC Global Private Banking | statusNote | 运营状态说明包含与官网不一致的域名：privatebanking.hsbc.com | 正常运营：官方网站 privatebanking.hsbc.com 活跃，2025-2026 年任命新领导；持续发布媒体声明、全球企业家财富报告和财富管理服务。 | 优先核对该行是否引用了其他机构官网或状态说明。 |
+| Lancang-Mekong Development Foundation | statusNote | 运营状态说明疑似提到其他机构：Plan International | 正常运营：官方网站（thelmdf.org）已更新并活跃；参与2025-2026年Lancang-Mekong Cooperation (LMC) 活动，包括区域合作项目和战略计划支持（如MI Strategic Plan 2026-2030的关联框架）。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| TT Foundation Advisors | statusNote | 运营状态说明疑似提到其他机构：Plan International | 正常运营：作为私人基金会顾问或支持服务常见术语/实体，相关指南和规划工具持续更新（如 Foundation Planning Guide for Advisors 和私人基金会合规指南）；多家顾问公司（如 Foundation Source）提供相关服务，活跃于慈善规划领域。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| The Danish Centre for Human Rights | statusNote | 运营状态说明疑似提到其他机构：Danish Institute for Human Rights | 已停止独立运营（2002年并入DIHR）。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+| WINGS for Asia | statusNote | 运营状态说明疑似提到其他机构：Worldwide Initiatives for Grantmaker Support | 正常运营：作为 WINGS 网络亚洲分支持续活跃，支持区域慈善发展。 | 回到 Excel 对该行状态说明做人工核对，确认是否串行。 |
+
+### 问题字段分布
+
+| 字段 | 问题数 |
+|---|---:|
+| contactName/contactTitle | 104 |
+| cooperationStatus | 57 |
+| contactName | 52 |
+| statusNote | 11 |
+| website | 10 |
+| functionStd | 5 |
+| natureStd | 3 |
+| body | 3 |
+| email | 2 |
+| title | 1 |
+| country | 1 |
 
 ## 待核查清单
 

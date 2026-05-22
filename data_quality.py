@@ -82,6 +82,11 @@ def snippet(value, max_len: int = 150) -> str:
   return text if len(text) <= max_len else text[: max_len - 1].rstrip() + "…"
 
 
+def markdown_cell(value) -> str:
+  text = compact_text(value)
+  return text.replace("|", "\\|") if text else ""
+
+
 def domain_from_url(value: str) -> str:
   text = compact_text(value)
   if not text or is_missing(text):
@@ -354,6 +359,48 @@ def render_report(issues: Iterable[QualityIssue], summary: dict) -> str:
 
   lines.extend([
     "",
+    "## 重点排查",
+    "",
+  ])
+  if counts.get("ERROR", 0):
+    lines.extend([
+      "以下为发布前建议优先人工核对的问题，通常对应疑似串行、区域口径或关键字段错误。",
+      "",
+      "| 机构 | 字段 | 问题 | 当前值 | 建议 |",
+      "|---|---|---|---|---|",
+    ])
+    for issue in [item for item in ordered if item.severity == "ERROR"]:
+      lines.append(
+        "| "
+        + " | ".join(
+          markdown_cell(cell)
+          for cell in (
+            issue.org,
+            issue.field,
+            issue.message,
+            issue.value,
+            issue.suggestion,
+          )
+        )
+        + " |"
+      )
+  else:
+    lines.append("未发现 ERROR 级别问题。")
+
+  field_counts = Counter(issue.field for issue in issues)
+  if field_counts:
+    lines.extend([
+      "",
+      "### 问题字段分布",
+      "",
+      "| 字段 | 问题数 |",
+      "|---|---:|",
+    ])
+    for field, count in field_counts.most_common():
+      lines.append(f"| {markdown_cell(field)} | {count} |")
+
+  lines.extend([
+    "",
     "## 待核查清单",
     "",
   ])
@@ -368,7 +415,7 @@ def render_report(issues: Iterable[QualityIssue], summary: dict) -> str:
       lines.append(
         "| "
         + " | ".join(
-          cell.replace("|", "\\|")
+          markdown_cell(cell)
           for cell in (
             issue.severity,
             issue.org,
