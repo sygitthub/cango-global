@@ -784,120 +784,6 @@
           </div>
         </section>
 
-        <!-- 数据校验说明 / 区域统计结果校验表 -->
-        <section class="px-8 pb-8">
-          <article
-            class="dashboard-card rounded-3xl bg-slate-900/80 border border-slate-800"
-          >
-            <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
-              <h2 class="text-sm font-semibold text-slate-100">
-                数据校验说明｜总部区域统计
-              </h2>
-              <div id="dataVerifyStatusText" class="text-[11px] text-emerald-300 font-medium">
-                数据核验状态：已对齐（— 家机构）
-              </div>
-            </header>
-            <div class="overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/40">
-              <table class="min-w-full text-xs">
-                <thead class="bg-slate-900/80 text-[11px] text-slate-400">
-                  <tr>
-                    <th class="px-3 py-2 text-left font-medium border-b border-slate-800/80">
-                      区域
-                    </th>
-                    <th class="px-3 py-2 text-left font-medium border-b border-slate-800/80">
-                      基准值
-                    </th>
-                    <th class="px-3 py-2 text-left font-medium border-b border-slate-800/80">
-                      使用值
-                    </th>
-                  </tr>
-                </thead>
-                                                                                                                                                                                                                                                                                                                <tbody class="divide-y divide-slate-800/70">
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      欧洲 (Europe)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      95
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      95
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      亚洲 (Asia)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      69
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      69
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      北美洲 (North America)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      28
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      28
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      非洲 (Africa)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      4
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      4
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      南美洲 (South America)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      4
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      4
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      大洋洲 (Oceania)
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100">
-                      3
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300">
-                      3
-                    </td>
-                  </tr>
-                  <tr class="bg-slate-900/80">
-                    <td class="px-3 py-2 text-[11px] text-slate-100 font-medium">
-                      合计
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-slate-100 font-medium">
-                      203
-                    </td>
-                    <td class="px-3 py-2 text-[11px] text-emerald-300 font-medium">
-                      203
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="mt-2 text-[11px] text-slate-500">
-              注：如需二次核验，可逐条对照 Excel 中的机构记录，确认其「总部所在-区域」字段与上表八类区域分类一致。
-            </p>
-          </article>
-        </section>
       </main>
     </div>
 
@@ -1230,9 +1116,6 @@
 
         document.getElementById("summaryTotalSpan").textContent = totalOrgs;
         document.getElementById("summaryTotalBadge").textContent = totalOrgs;
-
-        const verifyEl = document.getElementById("dataVerifyStatusText");
-        if (verifyEl) verifyEl.textContent = "数据核验状态：已对齐（" + totalOrgs + " 家机构）";
 
         const dateEl = document.getElementById("headerUpdateDate");
         if (dateEl) {

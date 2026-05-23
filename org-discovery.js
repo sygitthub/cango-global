@@ -333,6 +333,169 @@
     resetBtn.classList.toggle("hidden", !hasActiveFilters(filters));
   }
 
+  function containsCjk(value) {
+    return /[\u3400-\u9fff]/.test(compactText(value));
+  }
+
+  function containsLatin(value) {
+    return /[A-Za-z]/.test(compactText(value));
+  }
+
+  function normalizeNameText(value) {
+    return compactText(value).replace(/[（]/g, "(").replace(/[）]/g, ")");
+  }
+
+  function stripTrailingParenthetical(value) {
+    return normalizeNameText(value).replace(/\s*\([^)]{1,40}\)\s*$/g, "").trim();
+  }
+
+  function isSameName(a, b) {
+    return normalizeNameText(a).toLowerCase() === normalizeNameText(b).toLowerCase();
+  }
+
+  function isShortAlias(value) {
+    const text = stripTrailingParenthetical(value);
+    if (!text || containsCjk(text)) return false;
+    if (/^[A-Z0-9&./ -]{2,18}$/.test(text)) return true;
+    return text.split(/\s+/).length <= 3 && text.length <= 28 && /^[A-Za-z0-9&./ -]+$/.test(text);
+  }
+
+  function extractAbbr(value) {
+    const text = normalizeNameText(value);
+    if (!text) return "";
+    const parenMatches = Array.from(text.matchAll(/\(([^)]{2,40})\)/g));
+    for (const match of parenMatches) {
+      const candidate = compactText(match[1]).replace(/^原\s+/i, "").trim();
+      if (isShortAlias(candidate)) return candidate;
+    }
+    return isShortAlias(text) ? stripTrailingParenthetical(text) : "";
+  }
+
+  function cleanChineseName(value) {
+    const text = compactText(value);
+    if (!text) return "";
+    return text
+      .replace(/[（(]\s*(?:现|原)?\s*[A-Z0-9&./ -]{2,28}\s*[）)]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function cleanPrimaryName(value) {
+    const text = normalizeNameText(value);
+    if (!text) return "";
+    const withoutTrailingNote = stripTrailingParenthetical(text);
+    if (containsLatin(withoutTrailingNote) && !containsCjk(withoutTrailingNote)) return withoutTrailingNote;
+    const latinParts = text
+      .split(/[·|｜/／;；,，、]+/)
+      .map(stripTrailingParenthetical)
+      .filter((part) => containsLatin(part) && !containsCjk(part));
+    return latinParts[0] || withoutTrailingNote || text;
+  }
+
+  function normalizeOrgNameParts(org) {
+    const title = normalizeNameText(org.title);
+    const alias = normalizeNameText(org.alias);
+    const nameCn = cleanChineseName(org.nameCn);
+    const primaryName =
+      cleanPrimaryName(title) ||
+      (containsLatin(alias) ? cleanPrimaryName(alias) : "") ||
+      nameCn ||
+      alias ||
+      "机构名称待补充";
+
+    const aliasAbbr = extractAbbr(alias);
+    const titleAbbr = extractAbbr(title);
+    const nameCnAbbr = extractAbbr(org.nameCn);
+    const aliasText = alias && !isSameName(alias, primaryName) ? stripTrailingParenthetical(alias) : "";
+    const secondaryAlias = aliasAbbr || nameCnAbbr || titleAbbr || (isShortAlias(aliasText) ? aliasText : "");
+    const secondaryParts = [];
+
+    if (nameCn && !isSameName(nameCn, primaryName)) secondaryParts.push(nameCn);
+    if (secondaryAlias && !secondaryParts.some((part) => isSameName(part, secondaryAlias)) && !isSameName(secondaryAlias, primaryName)) {
+      secondaryParts.push(secondaryAlias);
+    }
+
+    return {
+      primaryName,
+      secondaryName: secondaryParts.join(" · "),
+    };
+  }
+
+  function cleanGeoChinese(value) {
+    return compactText(value)
+      .replace(/[（(]\s*[A-Za-z][A-Za-z\s&.,'’/-]*\s*[）)]/g, "")
+      .replace(/[A-Za-z][A-Za-z\s&.,'’/-]*/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function normalizeCityName(value) {
+    const text = textValue(value);
+    if (!text) return "";
+    return text
+      .split(/\n+/)
+      .map((item) =>
+        item
+          .trim()
+          .replace(/（\s*/g, " (")
+          .replace(/\s*）/g, ")")
+          .replace(/\(\s+/g, "(")
+          .replace(/\s+\)/g, ")")
+          .replace(/\s*\(\s*([^()]*?)\s*\)\s*\(\s*\1\s*\)/g, " ($1)")
+          .replace(/\s+/g, " ")
+          .trim()
+      )
+      .filter(Boolean)
+      .join(" / ");
+  }
+
+  function renderLocation(org) {
+    return [
+      cleanGeoChinese(orgContinent(org)),
+      cleanGeoChinese(org.subRegionStd),
+      cleanGeoChinese(org.country),
+      normalizeCityName(org.city),
+    ]
+      .filter(isMeaningfulText)
+      .join(" / ");
+  }
+
+  function cleanAttributeTag(value) {
+    return compactText(value)
+      .replace(/[\uFF08(]\s*[A-Za-z][^\uFF09)]*[\uFF09)]/g, "")
+      .replace(/\s*\/\s*/g, " / ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function renderAttributeTags(org) {
+    const nature = cleanAttributeTag(org.natureStd);
+    const functionType = cleanAttributeTag(org.functionStd);
+    const tags = [];
+
+    if (nature) {
+      tags.push(`<span class="inline-flex items-center rounded-full bg-slate-800/90 border border-slate-700 px-2 py-0.5 text-[10px] text-slate-200">${escapeHtml(nature)}</span>`);
+    }
+    if (functionType) {
+      tags.push(`<span class="inline-flex items-center rounded-full bg-emerald-500/10 border border-emerald-400/20 px-2 py-0.5 text-[10px] text-emerald-100">${escapeHtml(functionType)}</span>`);
+    }
+
+    return tags.length ? `<div class="flex flex-wrap gap-2">${tags.join("")}</div>` : "";
+  }
+
+  function renderTopicChips(org) {
+    const topics = (org.topics || [])
+      .filter(isMeaningfulText)
+      .slice(0, 3)
+      .map(
+        (topic) =>
+          `<span class="inline-flex items-center rounded-full bg-brand-500/10 border border-brand-400/25 px-2 py-0.5 text-[10px] text-brand-100">${escapeHtml(topic)}</span>`
+      )
+      .join("");
+
+    return topics ? `<div class="flex flex-wrap gap-2">${topics}</div>` : "";
+  }
+
   function renderResults() {
     const filters = getFilters();
     const hasFilters = hasActiveFilters(filters);
@@ -363,22 +526,15 @@
     emptyEl.classList.add("hidden");
     resultsEl.innerHTML = filtered
       .map((org) => {
-        const nameLine = [org.nameCn, org.alias].filter(isMeaningfulText).join(" · ");
-        const location = [orgContinent(org), org.subRegionStd, org.country, org.city]
-          .filter(isMeaningfulText)
-          .join(" / ");
+        const { primaryName, secondaryName } = normalizeOrgNameParts(org);
+        const location = renderLocation(org);
         const statusSymbol = org.statusStd === "Warning" ? "!" : "•";
         const statusClass =
           org.statusStd === "Warning"
             ? "border-rose-400/50 bg-rose-500/15 text-rose-200"
             : "border-emerald-400/40 bg-emerald-500/12 text-emerald-200";
-        const topics = (org.topics || [])
-          .slice(0, 3)
-          .map(
-            (topic) =>
-              `<span class="inline-flex items-center rounded-full bg-brand-500/10 border border-brand-400/25 px-2 py-0.5 text-[10px] text-brand-100">${escapeHtml(topic)}</span>`
-          )
-          .join("");
+        const attributeTags = renderAttributeTags(org);
+        const topicTags = renderTopicChips(org);
         const china = hasChinaSignal(org)
           ? `<p class="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-500/10 px-3 py-2 text-[11px] leading-relaxed text-cyan-100">中国线索：${escapeHtml(shortenText(org.chinaConnection, 120))}</p>`
           : "";
@@ -386,16 +542,15 @@
           <article class="rounded-2xl border border-slate-800 bg-slate-950/45 px-4 py-4 hover:border-brand-400/50 hover:bg-slate-900/80 transition-colors">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <h3 class="text-base font-semibold text-slate-50 leading-snug">${escapeHtml(org.title || "机构名称待补充")}</h3>
-                ${nameLine ? `<p class="mt-1 text-[12px] text-slate-400">${escapeHtml(nameLine)}</p>` : ""}
+                <h3 class="text-base font-semibold text-slate-50 leading-snug">${escapeHtml(primaryName)}</h3>
+                ${secondaryName ? `<p class="mt-1 text-xs text-slate-400">${escapeHtml(secondaryName)}</p>` : ""}
                 <p class="mt-1 text-[11px] text-slate-500">${escapeHtml(location || "地点待补充")}</p>
               </div>
               <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold leading-none ${statusClass}" title="${escapeHtml(statusLabel(org.statusStd))}" aria-label="${escapeHtml(statusLabel(org.statusStd))}">${escapeHtml(statusSymbol)}</span>
             </div>
-            <div class="mt-3 flex flex-wrap gap-2">
-              ${org.natureStd ? `<span class="inline-flex items-center rounded-full bg-slate-800/90 border border-slate-700 px-2 py-0.5 text-[10px] text-slate-200">${escapeHtml(org.natureStd)}</span>` : ""}
-              ${org.functionStd ? `<span class="inline-flex items-center rounded-full bg-emerald-500/10 border border-emerald-400/20 px-2 py-0.5 text-[10px] text-emerald-100">${escapeHtml(org.functionStd)}</span>` : ""}
-              ${topics}
+            <div class="mt-3 space-y-2">
+              ${attributeTags}
+              ${topicTags}
             </div>
             <p class="mt-3 text-[13px] leading-relaxed text-slate-300">${escapeHtml(shortenText(org.body, 180) || "暂无简介。")}</p>
             ${china}
