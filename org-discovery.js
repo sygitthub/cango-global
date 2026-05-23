@@ -1,5 +1,5 @@
 (function () {
-  const state = { orgs: [], filtered: [], activeOrgId: null };
+  const state = { orgs: [], filtered: [], activeOrgId: null, showAllResults: false };
   const filterIds = [
     "orgDiscoverySearch",
     "orgDiscoveryRegion",
@@ -296,11 +296,15 @@
     if (!container) return;
 
     if (!hasActiveFilters(filters)) {
+      const activeClass = state.showAllResults
+        ? "border-brand-300 bg-brand-500/25 text-white shadow-[0_0_0_1px_rgba(96,165,250,0.25)]"
+        : "border-brand-400/50 bg-brand-500/15 text-brand-100";
       container.innerHTML = `
         <button
           type="button"
-          data-org-discovery-reset
-          class="inline-flex items-center rounded-full border border-brand-400/50 bg-brand-500/15 px-3 py-1.5 text-[12px] font-medium text-brand-100 hover:border-brand-300 hover:bg-brand-500/25 transition-colors"
+          data-org-discovery-toggle-all
+          class="inline-flex items-center rounded-full border px-3 py-1.5 text-[12px] font-medium hover:border-brand-300 hover:bg-brand-500/25 transition-colors ${activeClass}"
+          aria-pressed="${state.showAllResults ? "true" : "false"}"
         >
           全部机构 (${state.orgs.length})
         </button>
@@ -331,7 +335,9 @@
 
   function renderResults() {
     const filters = getFilters();
+    const hasFilters = hasActiveFilters(filters);
     const filtered = state.orgs.filter((org) => matchesFilters(org, filters));
+    const shouldShowList = hasFilters || state.showAllResults;
     state.filtered = filtered;
     const countEl = document.getElementById("orgDiscoveryCount");
     const totalEl = document.getElementById("orgDiscoveryTotal");
@@ -342,6 +348,13 @@
     renderActiveFilters(filters);
     updateResetButtonVisibility(filters);
     if (!resultsEl || !emptyEl) return;
+    if (!shouldShowList) {
+      resultsEl.innerHTML = "";
+      resultsEl.classList.add("hidden");
+      emptyEl.classList.add("hidden");
+      return;
+    }
+    resultsEl.classList.remove("hidden");
     if (!filtered.length) {
       resultsEl.innerHTML = "";
       emptyEl.classList.remove("hidden");
@@ -402,7 +415,16 @@
       if (el.tagName === "SELECT") el.value = "all";
       else el.value = "";
     });
+    state.showAllResults = false;
     updateSubRegionVisibility();
+    renderResults();
+  }
+
+  function handleFilterChange() {
+    const filters = getFilters();
+    if (hasActiveFilters(filters)) {
+      state.showAllResults = true;
+    }
     renderResults();
   }
 
@@ -433,11 +455,11 @@
       if (id === "orgDiscoveryRegion") {
         el.addEventListener("change", () => {
           updateSubRegionVisibility();
-          renderResults();
+          handleFilterChange();
         });
         return;
       }
-      el.addEventListener(el.tagName === "SELECT" ? "change" : "input", renderResults);
+      el.addEventListener(el.tagName === "SELECT" ? "change" : "input", handleFilterChange);
     });
 
     const resetBtn = document.getElementById("orgDiscoveryReset");
@@ -445,9 +467,12 @@
     const activeFiltersEl = document.getElementById("orgDiscoveryActiveFilters");
     if (activeFiltersEl) {
       activeFiltersEl.addEventListener("click", (event) => {
-        const resetTarget = event.target.closest("[data-org-discovery-reset]");
-        if (!resetTarget) return;
-        resetFilters();
+        const toggleAllTarget = event.target.closest("[data-org-discovery-toggle-all]");
+        if (!toggleAllTarget) return;
+        const filters = getFilters();
+        if (hasActiveFilters(filters)) return;
+        state.showAllResults = !state.showAllResults;
+        renderResults();
       });
     }
     const resultsEl = document.getElementById("orgDiscoveryResults");
