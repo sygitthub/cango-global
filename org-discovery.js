@@ -7,6 +7,78 @@
     "orgDiscoveryCountry",
     "orgDiscoveryTopic",
   ];
+  const COUNTRY_MAP = {
+    "阿根廷": "阿根廷 (Argentina)",
+    "埃及": "埃及 (Egypt)",
+    "埃及 (Egypt)": "埃及 (Egypt)",
+    "奥地利": "奥地利 (Austria)",
+    "奥地利 (Austria)": "奥地利 (Austria)",
+    "澳大利亚": "澳大利亚 (Australia)",
+    "澳大利亚 (Australia)": "澳大利亚 (Australia)",
+    "巴基斯坦": "巴基斯坦 (Pakistan)",
+    "巴西": "巴西 (Brazil)",
+    "比利时": "比利时 (Belgium)",
+    "比利时 (Belgium)": "比利时 (Belgium)",
+    "保加利亚": "保加利亚 (Bulgaria)",
+    "保加利亚 (Bulgaria)": "保加利亚 (Bulgaria)",
+    "波斯尼亚和黑塞哥维那": "波斯尼亚和黑塞哥维那 (Bosnia and Herzegovina)",
+    "波斯尼亚和黑塞哥维那 (Bosnia and Herzegovina)": "波斯尼亚和黑塞哥维那 (Bosnia and Herzegovina)",
+    "丹麦": "丹麦 (Denmark)",
+    "丹麦 (Denmark)": "丹麦 (Denmark)",
+    "丹麦 (推定)": "丹麦 (Denmark)",
+    "德国": "德国 (Germany)",
+    "德国 (Germany)": "德国 (Germany)",
+    "俄罗斯": "俄罗斯 (Russia)",
+    "俄罗斯 (Russia)": "俄罗斯 (Russia)",
+    "法国": "法国 (France)",
+    "法国 (France)": "法国 (France)",
+    "菲律宾": "菲律宾 (Philippines)",
+    "菲律宾 (Philippines)": "菲律宾 (Philippines)",
+    "刚果民主共和国": "刚果民主共和国 (Democratic Republic of the Congo)",
+    "哈萨克斯坦": "哈萨克斯坦 (Kazakhstan)",
+    "韩国": "韩国 (South Korea)",
+    "韩国 (South Korea)": "韩国 (South Korea)",
+    "荷兰": "荷兰 (Netherlands)",
+    "荷兰 (Netherlands)": "荷兰 (Netherlands)",
+    "荷兰 (法律主体所在地)": "荷兰 (Netherlands)",
+    "加拿大": "加拿大 (Canada)",
+    "柬埔寨": "柬埔寨 (Cambodia)",
+    "柬埔寨 (Cambodia)": "柬埔寨 (Cambodia)",
+    "卡塔尔": "卡塔尔 (Qatar)",
+    "罗马尼亚": "罗马尼亚 (Romania)",
+    "罗马尼亚 (Romania)": "罗马尼亚 (Romania)",
+    "马来西亚": "马来西亚 (Malaysia)",
+    "马来西亚 (Malaysia)": "马来西亚 (Malaysia)",
+    "美国": "美国 (United States)",
+    "南非": "南非 (South Africa)",
+    "尼泊尔": "尼泊尔 (Nepal)",
+    "尼泊尔 (Nepal)": "尼泊尔 (Nepal)",
+    "挪威": "挪威 (Norway)",
+    "挪威 (Norway)": "挪威 (Norway)",
+    "日本": "日本 (Japan)",
+    "日本 (Japan)": "日本 (Japan)",
+    "瑞士": "瑞士 (Switzerland)",
+    "瑞士 (Switzerland)": "瑞士 (Switzerland)",
+    "沙特阿拉伯": "沙特阿拉伯 (Saudi Arabia)",
+    "泰国": "泰国 (Thailand)",
+    "泰国 (Thailand)": "泰国 (Thailand)",
+    "坦桑尼亚": "坦桑尼亚 (Tanzania)",
+    "坦桑尼亚 (Tanzania)": "坦桑尼亚 (Tanzania)",
+    "乌兹别克斯坦": "乌兹别克斯坦 (Uzbekistan)",
+    "西班牙": "西班牙 (Spain)",
+    "西班牙 (Spain)": "西班牙 (Spain)",
+    "新加坡": "新加坡 (Singapore)",
+    "新加坡 (Singapore)": "新加坡 (Singapore)",
+    "意大利": "意大利 (Italy)",
+    "意大利 (Italy)": "意大利 (Italy)",
+    "印度": "印度 (India)",
+    "英国": "英国 (United Kingdom)",
+    "找不到相关信息": "找不到相关信息",
+    "中国": "中国 (China)",
+    "中国澳门": "中国澳门 (Macau, China)",
+    "中国台湾": "中国台湾 (Taiwan, China)",
+    "中国香港": "中国香港 (Hong Kong, China)",
+  };
   const continentOrder = ["欧洲", "亚洲", "北美", "南美/拉美", "非洲", "大洋洲"];
   const asiaSubRegionOrder = ["东亚", "东南亚", "南亚", "中亚", "中东", "亚洲其他"];
 
@@ -16,6 +88,19 @@
 
   function compactText(value) {
     return textValue(value).replace(/\s+/g, " ").trim();
+  }
+
+  function normalizeCountry(value) {
+    const text = compactText(value)
+      .replace(/（/g, " (")
+      .replace(/）/g, ")")
+      .replace(/\s*\(\s*/g, " (")
+      .replace(/\s*\)\s*/g, ")")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!text) return "";
+    const withoutNotes = text.replace(/\s*\((?:推定|法律主体所在地)\)\s*$/g, "").trim();
+    return COUNTRY_MAP[text] || COUNTRY_MAP[withoutNotes] || withoutNotes || text;
   }
 
   function normalizeForSearch(value) {
@@ -37,9 +122,17 @@
   function setSelectOptions(id, values, allLabel) {
     const select = document.getElementById(id);
     if (!select) return;
+    const optionValues =
+      id === "orgDiscoveryCountry"
+        ? uniqueSorted(values.map(normalizeCountry)).sort((a, b) => {
+            if (a === "找不到相关信息") return 1;
+            if (b === "找不到相关信息") return -1;
+            return 0;
+          })
+        : values;
     select.innerHTML =
       `<option value="all">${escapeHtml(allLabel)}</option>` +
-      values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
+      optionValues.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
   }
 
   function orgContinent(org) {
@@ -84,6 +177,7 @@
         org.continentStd,
         org.subRegionStd,
         org.country,
+        normalizeCountry(org.country),
         org.city,
         org.natureStd,
         org.functionStd,
@@ -128,7 +222,7 @@
     if (filters.keyword && !discoveryOrgBlob(org).includes(filters.keyword)) return false;
     if (filters.region !== "all" && orgContinent(org) !== filters.region) return false;
     if (filters.subRegion !== "all" && org.subRegionStd !== filters.subRegion) return false;
-    if (filters.country !== "all" && org.country !== filters.country) return false;
+    if (filters.country !== "all" && org.country !== filters.country && normalizeCountry(org.country) !== filters.country) return false;
     if (filters.topic !== "all" && !(org.topics || []).includes(filters.topic)) return false;
     return true;
   }

@@ -150,7 +150,39 @@
       }
 
       .cango-mission-footer {
+        position: relative;
+        min-height: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
         text-align: center;
+        isolation: isolate;
+      }
+
+      .cango-mission-wave-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .cango-mission-wave-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        mix-blend-mode: screen;
+        filter: blur(0.15px) drop-shadow(0 0 10px rgba(56, 189, 248, 0.18));
+      }
+
+      .cango-mission-content {
+        position: relative;
+        z-index: 1;
+        max-width: 72rem;
+        margin: 0 auto;
       }
 
       .cango-mission-title {
@@ -158,15 +190,15 @@
         color: transparent;
         background-image: linear-gradient(
           90deg,
-          #ffffff 0%,
-          #e2e8f0 42%,
+          #dbeafe 0%,
+          #f8fafc 38%,
           #93c5fd 58%,
-          #ffffff 100%
+          #dbeafe 100%
         );
         background-size: 220% 100%;
         -webkit-background-clip: text;
         background-clip: text;
-        animation: fluid-shimmer 10s ease infinite;
+        animation: fluid-shimmer 12s ease-in-out infinite;
       }
 
       @keyframes fluid-shimmer {
@@ -827,17 +859,142 @@
       class="cango-mission-footer bg-gradient-to-t from-slate-950 to-transparent py-20 px-6"
       aria-label="CANGO mission statement"
     >
-      <p
-        class="cango-mission-title font-sans text-2xl sm:text-3xl font-black tracking-[0.35em]"
-      >
-        推动中外民间协同，助力全球持续发展
-      </p>
-      <p
-        class="font-sans text-xs sm:text-sm font-extralight uppercase tracking-[0.2em] text-slate-500/80 mt-6"
-      >
-        TO FOSTER CHINESE AND INTERNATIONAL CIVIL SOCIETY COLLABORATION FOR SUSTAINABLE GLOBAL DEVELOPMENT
-      </p>
+      <div class="cango-mission-wave-layer" aria-hidden="true">
+        <canvas id="cangoMissionWaveCanvas" class="cango-mission-wave-canvas"></canvas>
+      </div>
+      <div class="cango-mission-content">
+        <p
+          class="cango-mission-title font-sans text-2xl sm:text-3xl font-black tracking-[0.35em] pl-[0.35em]"
+        >
+          推动中外民间协同，助力全球持续发展
+        </p>
+        <p
+          class="font-sans text-xs sm:text-sm font-extralight uppercase tracking-[0.2em] text-slate-500/80 mt-6 leading-relaxed pl-[0.2em]"
+        >
+          TO FOSTER CHINESE AND INTERNATIONAL CIVIL SOCIETY COLLABORATION FOR SUSTAINABLE GLOBAL DEVELOPMENT
+        </p>
+      </div>
     </footer>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("cangoMissionWaveCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const waveGroups = [
+          {
+            amplitude: 38,
+            frequency: 0.0075,
+            speed: -0.00034,
+            color: "rgba(96, 165, 250, 0.45)",
+            transparentColor: "rgba(96, 165, 250, 0)",
+            offsets: [-18, -12, -6, 0, 6, 12, 18],
+            phase: 0,
+            width: 1.15,
+          },
+          {
+            amplitude: 30,
+            frequency: 0.011,
+            speed: -0.00025,
+            color: "rgba(139, 92, 246, 0.35)",
+            transparentColor: "rgba(139, 92, 246, 0)",
+            offsets: [-15, -9, -3, 3, 9, 15],
+            phase: Math.PI / 3,
+            width: 1,
+          },
+          {
+            amplitude: 18,
+            frequency: 0.0058,
+            speed: -0.00018,
+            color: "rgba(45, 212, 191, 0.25)",
+            transparentColor: "rgba(45, 212, 191, 0)",
+            offsets: [-12, -6, 0, 6, 12],
+            phase: Math.PI / 1.5,
+            width: 0.85,
+          },
+        ];
+
+        let width = 0;
+        let height = 0;
+        let animationFrame = null;
+
+        function resizeCanvas() {
+          const dpr = window.devicePixelRatio || 1;
+          width = canvas.offsetWidth;
+          height = canvas.offsetHeight;
+          canvas.width = Math.max(1, Math.round(width * dpr));
+          canvas.height = Math.max(1, Math.round(height * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function drawFrame(time = 0) {
+          ctx.clearRect(0, 0, width, height);
+          const centerY = height * 0.56;
+
+          waveGroups.forEach((wave) => {
+            const strokeGradient = ctx.createLinearGradient(0, 0, width, 0);
+            strokeGradient.addColorStop(0, wave.transparentColor);
+            strokeGradient.addColorStop(0.12, wave.color);
+            strokeGradient.addColorStop(0.5, wave.color);
+            strokeGradient.addColorStop(0.88, wave.color);
+            strokeGradient.addColorStop(1, wave.transparentColor);
+
+            wave.offsets.forEach((offset, index) => {
+              ctx.beginPath();
+              ctx.shadowBlur = 8;
+              ctx.shadowColor = wave.color;
+              ctx.strokeStyle = strokeGradient;
+              ctx.lineWidth = wave.width;
+              ctx.globalAlpha = 0.72 - index * 0.035;
+
+              for (let x = 0; x <= width; x += 2) {
+                const drift = time * wave.speed;
+                const y =
+                  centerY +
+                  offset +
+                  wave.amplitude * Math.sin(x * wave.frequency + wave.phase + drift) +
+                  7 * Math.sin(x * wave.frequency * 0.47 + wave.phase * 1.7 + drift * 0.7);
+
+                if (x === 0) {
+                  ctx.moveTo(x, y);
+                } else {
+                  ctx.lineTo(x, y);
+                }
+              }
+
+              ctx.stroke();
+            });
+          });
+
+          ctx.shadowBlur = 0;
+          ctx.shadowColor = "transparent";
+          ctx.globalAlpha = 1;
+        }
+
+        function animate(time) {
+          drawFrame(time);
+          animationFrame = window.requestAnimationFrame(animate);
+        }
+
+        function start() {
+          resizeCanvas();
+          if (animationFrame) window.cancelAnimationFrame(animationFrame);
+          if (reduceMotion.matches) {
+            drawFrame(0);
+            animationFrame = null;
+          } else {
+            animationFrame = window.requestAnimationFrame(animate);
+          }
+        }
+
+        window.addEventListener("resize", start);
+        reduceMotion.addEventListener?.("change", start);
+        start();
+      })();
+    </script>
 
     <!-- 弹窗：待核查机构详情（点击存续状态图红色扇区或「需预警/待核查」图例触发） -->
     <div
@@ -972,21 +1129,20 @@
         Oceania: "Oceania",
       };
 
-      // 模块 3：成立时间趋势（按 5 年区间汇总，基于 Excel「成立时间」字段，2026.02 更新）
-      // 逐条核验区间统计结果（204 家机构）：
-      // - 1990 及以前：90 家
-      // - 1991–1995：20 家
+      // 模块 3：成立时间趋势（按 5 年区间汇总，基于最新 203 家机构数据；181 家有有效成立年份）
+      // - 1990 及以前：91 家
+      // - 1991–1995：21 家
       // - 1996–2000：21 家
-      // - 2001–2005：17 家
-      // - 2006–2010：10 家
+      // - 2001–2005：21 家
+      // - 2006–2010：12 家
       // - 2011–2015：6 家
       // - 2016–2020：7 家
-      // - 2021–2024：2 家
+      // - 2021–2025：2 家
       const foundedYearTrend = [
       { label: "≤1990", count: 91 },
       { label: "1991–1995", count: 21 },
       { label: "1996–2000", count: 21 },
-      { label: "2001–2005", count: 20 },
+      { label: "2001–2005", count: 21 },
       { label: "2006–2010", count: 12 },
       { label: "2011–2015", count: 6 },
       { label: "2016–2020", count: 7 },

@@ -2,7 +2,7 @@
 
 - 生成时间：2026-05-22 13:28:59
 - 机构总数：203
-- 问题统计：ERROR 11 / WARN 181 / INFO 57
+- 问题统计：ERROR 11 / WARN 177 / INFO 57
 
 ## 分布校验
 
@@ -85,10 +85,6 @@
 | WARN | Australian Agency for International Development | contactName/contactTitle | 联系人和职位完全相同 | 机构 |  |
 | WARN | Australian Agency for International Development | website | 官网字段包含空格，可能混入备注 | 已无独立官网（现并入 https://www.dfat.gov.au） |  |
 | WARN | BBC World Service Trust | website | 官网字段不像 URL 或域名 | 现已并入 BBC Media Action |  |
-| WARN | BalkanKids Foundation | body | 关键字段为空或仅包含缺省说明 | 未检索到权威官网或注册信息，疑似为小型或已不活跃的区域性基金会。缺乏明确法律注册、总部地址及持续运营记录。 |  |
-| WARN | BalkanKids Foundation | country | 关键字段为空或仅包含缺省说明 | 找不到相关信息 |  |
-| WARN | BalkanKids Foundation | functionStd | 关键字段为空或仅包含缺省说明 | 找不到相关信息 |  |
-| WARN | BalkanKids Foundation | natureStd | 关键字段为空或仅包含缺省说明 | 找不到相关信息 |  |
 | WARN | Bill & Melinda Gates Foundation | contactName/contactTitle | 联系人和职位完全相同 | 找不到相关信息 |  |
 | WARN | Bill & Melinda Gates Foundation | cooperationStatus | 合作状态字段疑似混入说明性长文本或运营状态 | 正常运营（官网持续更新2024-2025年度报告与项目公告） |  |
 | WARN | Bread for All | contactName/contactTitle | 联系人和职位完全相同 | 机构 |  |
